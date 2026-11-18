@@ -97,9 +97,9 @@ final class _TimingLane extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final labelWidth = 110.0;
-          final laneWidth = (constraints.maxWidth - labelWidth).clamp(10, double.infinity);
+          final laneWidth = (constraints.maxWidth - labelWidth).clamp(10, double.infinity).toDouble();
           final left = layer.timing.inMs / durationMs * laneWidth;
-          final width = ((outMs - layer.timing.inMs) / durationMs * laneWidth).clamp(2, laneWidth);
+          final width = ((outMs - layer.timing.inMs) / durationMs * laneWidth).clamp(2, laneWidth).toDouble();
           return Row(
             children: <Widget>[
               SizedBox(

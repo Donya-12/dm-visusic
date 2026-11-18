@@ -62,6 +62,7 @@
   "replaceImage": "Replace image",
   "chooseColor": "Choose color",
   "cancel": "Cancel",
+  "clear": "Clear",
   "apply": "Apply",
   "demoSignal": "Demo signal",
   "demoSignalExplanation": "These reactions use a deterministic built-in demo signal. Real audio decoding and analysis are introduced in M3.",

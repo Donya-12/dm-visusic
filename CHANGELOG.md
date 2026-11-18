@@ -14,3 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Application welcome, about, and third-party license views.
 - MIT license, contribution guidance, architecture documentation, and initial ADRs.
 - Local verification script, Windows CI, and portable ZIP packaging.
+- Scene editor with aspect ratios, layers, selection, transforms, snapping, inspector, undo/redo, and `.vsproj` save/open.
+- Widget manifest validator, safe numeric expressions, frame-based bindings, and the built-in widget library.
+- Deterministic scene painter shared by the editor, library previews, and future export.

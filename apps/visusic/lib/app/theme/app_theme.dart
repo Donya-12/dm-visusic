@@ -141,6 +141,7 @@ abstract final class AppTheme {
         space: 1,
       ),
       visualDensity: VisualDensity.standard,
+      splashFactory: InkRipple.splashFactory,
     );
   }
 

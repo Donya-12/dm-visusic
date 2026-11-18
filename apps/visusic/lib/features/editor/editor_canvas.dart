@@ -51,7 +51,7 @@ class _EditorCanvasState extends State<EditorCanvas> {
             children: <Widget>[
               for (final zoom in const <(String, String, IconData)>[
                 ('fit', 'Fit', Icons.fit_screen_rounded),
-                ('fill', 'Fill', Icons.crop_free_rounded),
+                ('fill', 'Fill', Icons.rectangle_rounded),
                 ('100%', '100%', Icons.percent_rounded),
               ])
                 Padding(
@@ -78,7 +78,7 @@ class _EditorCanvasState extends State<EditorCanvas> {
               IconButton(
                 tooltip: _phoneFrame ? l10n.phoneFrame : l10n.sceneFrame,
                 onPressed: () => setState(() => _phoneFrame = !_phoneFrame),
-                icon: Icon(_phoneFrame ? Icons.crop_rectangle_rounded : Icons.smartphone_rounded),
+                icon: Icon(_phoneFrame ? Icons.rectangle_rounded : Icons.smartphone_rounded),
               ),
               IconButton(
                 tooltip: '${l10n.grid} (${widget.controller.gridSize} px)',

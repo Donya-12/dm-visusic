@@ -644,7 +644,7 @@ final class EditorController extends ChangeNotifier {
   void _refreshExpressions() {
     expressionValues = _bindingResolver.resolve(
       project,
-      registry.manifests,
+      registry,
       _features,
     );
   }

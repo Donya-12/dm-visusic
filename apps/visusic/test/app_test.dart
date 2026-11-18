@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:visusic/app/app.dart';
 import 'package:visusic/app/localization/generated/app_localizations.dart';
+import 'package:visusic_widgets_builtin/visusic_widgets_builtin.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +22,9 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
 
-    await tester.pumpWidget(const VisuSicApp());
+    await tester.pumpWidget(
+      VisuSicApp(registry: BuiltinLibrary.createRegistry()),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('A stage for your sound'), findsOneWidget);
@@ -35,12 +38,14 @@ void main() {
   });
 
   testWidgets('switches between English and Russian', (tester) async {
-    await tester.pumpWidget(const VisuSicApp());
+    await tester.pumpWidget(
+      VisuSicApp(registry: BuiltinLibrary.createRegistry()),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('language-menu')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Русский').last);
+    await tester.tap(find.text('Русский').last, warnIfMissed: false);
     await tester.pumpAndSettle();
 
     expect(find.text('Сцена для твоего звука'), findsOneWidget);
@@ -48,7 +53,9 @@ void main() {
   });
 
   testWidgets('starts dark and switches to the light theme', (tester) async {
-    await tester.pumpWidget(const VisuSicApp());
+    await tester.pumpWidget(
+      VisuSicApp(registry: BuiltinLibrary.createRegistry()),
+    );
     await tester.pumpAndSettle();
 
     BuildContext context = tester.element(find.byType(Scaffold));

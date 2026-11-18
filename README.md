@@ -4,7 +4,7 @@
 
 VisuSic is an open-source, offline-first desktop editor for music visualizations and lyric videos. It combines a scene editor, reusable widget packs, audio-reactive graphics, and deterministic video export in one portable application.
 
-> **Project status:** the M0 application foundation is under construction. The scene editor is M1; audio, lyrics, and export follow in later milestones. This README describes implemented functionality, not a finished release.
+> **Project status:** M0 foundation, M1 scene editor, and M2 widget engine are implemented and tested. Audio analysis (M3), lyrics (M4), export (M5), and template packs (M6) are not yet implemented.
 
 ## Download for Windows
 
@@ -69,6 +69,7 @@ packages/visusic_render         Flutter scene renderer without host OS APIs
 packages/visusic_widgets_builtin Built-in widget definitions and renderers
 packages/visusic_platform       Host-platform service abstractions (pure Dart)
 docs                           Specification, architecture, and ADRs
+schemas                        JSON Schema for widget and project files
 tool                           Local verification and packaging scripts
 ```
 
@@ -80,9 +81,9 @@ The widget manifest and pack formats are specified in [section 6 of the specific
 
 ## Roadmap
 
-- **M0:** repository, application foundation, design system, CI, portable build.
-- **M1:** scene editor, transforms, layers, inspector, undo, project files.
-- **M2:** widget engine and library.
+- **M0:** repository, application foundation, design system, CI, portable build. ✅
+- **M1:** scene editor, transforms, layers, inspector, undo, project files. ✅
+- **M2:** widget engine and library. ✅
 - **M3:** audio decoding, analysis, playback, and reactive features.
 - **M4:** lyrics and karaoke.
 - **M5:** deterministic video export.

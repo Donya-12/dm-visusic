@@ -9,6 +9,9 @@ VisuSic itself is licensed under the MIT License. It includes or depends on the 
 | Flutter SDK and Flutter localizations | BSD 3-Clause | Framework components. |
 | `material_ui` and `cupertino_ui` | BSD 3-Clause | Material 3 widgets, theme components, and system localizations. |
 | `intl` Dart package | BSD 3-Clause | Localization message support. |
+| `archive` | BSD 3-Clause | Reading and writing the `.vsproj` ZIP container. |
+| `file_selector` | BSD 3-Clause | Native open/save dialogs on Windows and Android. |
+| `path_provider` | BSD 3-Clause | Application-support directory for crash recovery. |
 | Inter | SIL Open Font License 1.1 | Bundled variable font; copyright and license are in `apps/visusic/assets/fonts/OFL.txt`. |
 
 The application license page displays license texts collected from resolved Dart and Flutter packages. The Inter license is registered explicitly from the bundled asset.

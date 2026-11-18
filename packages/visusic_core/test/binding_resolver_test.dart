@@ -5,8 +5,6 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:test/test.dart';
-import 'package:visusic_core/src/binding_resolver.dart';
-import 'package:visusic_core/src/expressions.dart';
 import 'package:visusic_core/visusic_core.dart';
 
 void main() {

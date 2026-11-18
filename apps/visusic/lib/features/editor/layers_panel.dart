@@ -25,15 +25,13 @@ final class LayersPanel extends StatelessWidget {
       buildDefaultDragHandles: false,
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: ordered.length,
-      onReorder: (oldIndex, newIndex) {
-        final displayDestination = newIndex > oldIndex ? newIndex - 1 : newIndex;
+      onReorderItem: (oldIndex, newIndex) {
         final source = layers.length - 1 - oldIndex;
-        final destination = layers.length - 1 - displayDestination;
+        final destination = layers.length - 1 - newIndex;
         controller.moveLayer(source, destination);
       },
       itemBuilder: (context, index) {
         final layer = ordered[index];
-        final sourceIndex = layers.indexWhere((item) => item.id == layer.id);
         final selected = controller.selectedIds.contains(layer.id);
         return _LayerTile(
           key: ValueKey<String>(layer.id),
@@ -63,7 +61,7 @@ final class _LayerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final color = _tagColor(layer.colorTag);
+    final color = _tagColor(context, layer.colorTag);
     return ListTile(
       dense: true,
       selected: selected,
@@ -166,7 +164,7 @@ final class _LayerTile extends StatelessWidget {
     );
   }
 
-  Color _tagColor(String tag) => switch (tag) {
+  Color _tagColor(BuildContext context, String tag) => switch (tag) {
     'violet' => const Color(0xFF9B7BFF),
     'mint' => const Color(0xFF3DDC97),
     'amber' => const Color(0xFFFFD84D),

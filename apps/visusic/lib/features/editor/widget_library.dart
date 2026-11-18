@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: Copyright (c) 2026 Donya
 
-import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:visusic/app/localization/generated/app_localizations.dart';
 import 'package:visusic/features/editor/editor_controller.dart';

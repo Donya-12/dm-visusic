@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://visusic.dev/schemas/project.schema.json",
+  "title": "VisuSic project manifest",
+  "type": "object",
+  "required": ["schemaVersion", "name", "canvas", "layers"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "canvas": { "$ref": "#/$defs/canvas" },
+    "audio": {
+      "type": "object",
+      "properties": {
+        "path": { "type": ["string", "null"] },
+        "analysis": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "theme": { "type": "object" },
+    "lyrics": { "type": "object" },
+    "assets": { "type": "array", "items": { "$ref": "#/$defs/asset" } },
+    "layers": { "type": "array", "items": { "$ref": "#/$defs/layer" } },
+    "postFx": { "type": "array" }
+  },
+  "$defs": {
+    "canvas": {
+      "type": "object",
+      "required": ["width", "height", "aspect"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "aspect": { "type": "string" },
+        "fps": { "type": "integer", "minimum": 1, "maximum": 240 },
+        "duration": { "type": "number", "minimum": 0 },
+        "background": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "asset": {
+      "type": "object",
+      "required": ["id", "path", "mimeType"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 },
+        "mimeType": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "rect": {
+      "type": "object",
+      "required": ["x", "y", "w", "h"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "w": { "type": "number", "exclusiveMinimum": 0 },
+        "h": { "type": "number", "exclusiveMinimum": 0 },
+        "rotation": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "layer": {
+      "type": "object",
+      "required": ["id", "widget", "name", "rect"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "widget": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "rect": { "$ref": "#/$defs/rect" },
+        "params": { "type": "object" },
+        "keyframes": { "type": "object" },
+        "timing": { "type": "object" },
+        "locked": { "type": "boolean" },
+        "hidden": { "type": "boolean" },
+        "muted": { "type": "boolean" },
+        "solo": { "type": "boolean" },
+        "anchor": { "type": "string" },
+        "groupId": { "type": ["string", "null"] },
+        "colorTag": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -26,7 +26,13 @@ A dependency never points back toward the application. Core project logic does n
 
 ## M0 application shell
 
-The application currently provides a complete foundation shell: custom Material 3 light/dark themes, English and Russian localization, a welcome view, an about view, and license display. Editor interactions are intentionally introduced as working vertical slices in M1 rather than exposed as inactive controls in M0.
+The application provides a complete Material 3 shell with English and Russian localization, a welcome view, an about view, license display, and the scene editor behind the "New scene" action.
+
+## M1 scene editor and M2 widget engine
+
+The editor is driven by `EditorController`, which owns the project bundle, command history, selection, demo feature frame, decoded images, and evaluated expressions. The scene renderer (`ScenePainter`) is shared by the canvas, library thumbnails, and future export, guaranteeing one drawing implementation.
+
+Widgets are described by JSON manifests validated by `ManifestRegistry`. Parameters generate inspector controls automatically. A safe numeric expression language and a frame-based `BindingResolver` supply `params.*`, `bind.*`, `time.*`, `audio.*`, and `lyric.*` values to renderers. Built-in manifests ship in `visusic_widgets_builtin`, and third-party packs will use the same schema.
 
 ## Verification
 
