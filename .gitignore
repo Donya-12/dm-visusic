@@ -1,0 +1,30 @@
+# Local SDKs and tooling
+.tooling/
+
+# Dart and Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+
+# IDE and operating system files
+.idea/
+*.iml
+.vs/
+Thumbs.db
+Desktop.ini
+
+# Windows generated files
+**/windows/flutter/ephemeral/
+
+# Test and coverage output
+coverage/
+**/coverage/
+
+# Portable release output
+artifacts/

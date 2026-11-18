@@ -1,0 +1,17 @@
+name: visusic_workspace
+description: Development workspace for the VisuSic monorepo.
+publish_to: none
+
+environment:
+  sdk: ">=3.14.0 <4.0.0"
+
+workspace:
+  - apps/visusic
+  - packages/visusic_audio
+  - packages/visusic_core
+  - packages/visusic_platform
+  - packages/visusic_render
+  - packages/visusic_widgets_builtin
+
+dev_dependencies:
+  flutter_lints: 6.0.0

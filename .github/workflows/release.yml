@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.50.0
+          channel: stable
+          cache: true
+
+      - name: Analyze and test
+        shell: powershell
+        run: powershell -ExecutionPolicy Bypass -File tool/check.ps1
+
+      - name: Build portable Windows archive
+        shell: powershell
+        run: powershell -ExecutionPolicy Bypass -File tool/build_windows.ps1
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            artifacts/visusic-windows-x64-portable.zip
+            artifacts/visusic-windows-x64-portable.zip.sha256
+            LICENSE
+            THIRD-PARTY.md

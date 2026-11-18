@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.50.0
+          channel: stable
+          cache: true
+
+      - name: Analyze and test
+        shell: powershell
+        run: powershell -ExecutionPolicy Bypass -File tool/check.ps1
+
+      - name: Build portable Windows archive
+        shell: powershell
+        run: powershell -ExecutionPolicy Bypass -File tool/build_windows.ps1
+
+      - name: Upload portable archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: visusic-windows-x64-portable
+          path: |
+            artifacts/visusic-windows-x64-portable.zip
+            artifacts/visusic-windows-x64-portable.zip.sha256
+          if-no-files-found: error

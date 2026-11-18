@@ -1,0 +1,14 @@
+name: visusic_core
+description: Platform-independent project models and commands for VisuSic.
+version: 0.1.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ">=3.14.0 <4.0.0"
+
+dependencies:
+  archive: 4.7.1
+
+dev_dependencies:
+  test: 1.32.0

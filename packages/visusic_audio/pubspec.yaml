@@ -1,0 +1,11 @@
+name: visusic_audio
+description: Platform-independent audio analysis contracts for VisuSic.
+version: 0.1.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ">=3.14.0 <4.0.0"
+
+dev_dependencies:
+  test: 1.32.0

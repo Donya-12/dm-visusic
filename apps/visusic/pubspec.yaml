@@ -1,0 +1,39 @@
+name: visusic
+description: An offline-first music visualization and lyric video editor.
+version: 0.1.0+1
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ">=3.14.0 <4.0.0"
+  flutter: ">=3.50.0"
+
+dependencies:
+  cupertino_ui: 1.1.7
+  file_selector: 1.1.0
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: 0.20.3
+  material_ui: 1.11.1
+  path_provider: 2.1.6
+  visusic_audio: 0.1.0
+  visusic_core: 0.1.0
+  visusic_platform: 0.1.0
+  visusic_render: 0.1.0
+  visusic_widgets_builtin: 0.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  generate: true
+  assets:
+    - assets/fonts/OFL.txt
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Variable.ttf
