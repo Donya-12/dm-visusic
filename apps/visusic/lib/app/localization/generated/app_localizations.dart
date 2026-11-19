@@ -660,6 +660,12 @@ abstract class AppLocalizations {
   /// **'Open project'**
   String get openProject;
 
+  /// No description provided for @loadAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Load audio track'**
+  String get loadAudio;
+
   /// No description provided for @save.
   ///
   /// In en, this message translates to:

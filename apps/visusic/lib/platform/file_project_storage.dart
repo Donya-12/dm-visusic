@@ -12,6 +12,7 @@ import 'package:visusic_platform/visusic_platform.dart';
 final class FileProjectStorage implements ProjectStorage {
   static const int _maxProjectBytes = 128 * 1024 * 1024;
   static const int _maxImageBytes = 24 * 1024 * 1024;
+  static const int _maxAudioBytes = 512 * 1024 * 1024;
 
   @override
   Future<StoredBinaryFile?> openProject() async {
@@ -72,6 +73,27 @@ final class FileProjectStorage implements ProjectStorage {
       return null;
     }
     await _checkLength(file, _maxImageBytes);
+    return StoredBinaryFile(
+      path: file.path,
+      name: file.name,
+      bytes: await file.readAsBytes(),
+    );
+  }
+
+  @override
+  Future<StoredBinaryFile?> openAudio() async {
+    final file = await openFile(
+      acceptedTypeGroups: const <XTypeGroup>[
+        XTypeGroup(
+          label: 'Audio',
+          extensions: <String>['wav', 'mp3', 'flac', 'ogg', 'm4a', 'aac'],
+        ),
+      ],
+    );
+    if (file == null) {
+      return null;
+    }
+    await _checkLength(file, _maxAudioBytes);
     return StoredBinaryFile(
       path: file.path,
       name: file.name,

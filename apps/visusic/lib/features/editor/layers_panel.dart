@@ -115,7 +115,9 @@ final class _LayerTile extends StatelessWidget {
               layer.copyWith(hidden: !layer.hidden),
             ),
             icon: Icon(
-              layer.hidden ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+              layer.hidden
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
               size: 18,
             ),
           ),
@@ -143,19 +145,40 @@ final class _LayerTile extends StatelessWidget {
                 child: Text(layer.solo ? l10n.unsolo : l10n.solo),
               ),
               const PopupMenuDivider(),
-              const PopupMenuItem<String>(value: 'default', child: Text('Default')),
-              const PopupMenuItem<String>(value: 'violet', child: Text('Violet')),
+              const PopupMenuItem<String>(
+                value: 'default',
+                child: Text('Default'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'violet',
+                child: Text('Violet'),
+              ),
               const PopupMenuItem<String>(value: 'mint', child: Text('Mint')),
               const PopupMenuItem<String>(value: 'amber', child: Text('Amber')),
               const PopupMenuItem<String>(value: 'rose', child: Text('Rose')),
             ],
             onSelected: (action) {
-              if (<String>['default', 'violet', 'mint', 'amber', 'rose'].contains(action)) {
-                controller.commitLayerChange(layer, layer.copyWith(colorTag: action));
+              if (<String>[
+                'default',
+                'violet',
+                'mint',
+                'amber',
+                'rose',
+              ].contains(action)) {
+                controller.commitLayerChange(
+                  layer,
+                  layer.copyWith(colorTag: action),
+                );
               } else if (action == 'mute') {
-                controller.commitLayerChange(layer, layer.copyWith(muted: !layer.muted));
+                controller.commitLayerChange(
+                  layer,
+                  layer.copyWith(muted: !layer.muted),
+                );
               } else if (action == 'solo') {
-                controller.commitLayerChange(layer, layer.copyWith(solo: !layer.solo));
+                controller.commitLayerChange(
+                  layer,
+                  layer.copyWith(solo: !layer.solo),
+                );
               }
             },
           ),

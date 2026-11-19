@@ -3,6 +3,7 @@
 
 export 'src/analysis.dart';
 export 'src/analysis_cache.dart';
+export 'src/audio_decoder.dart';
 export 'src/msgpack.dart';
 
 /// Shared defaults for deterministic offline audio analysis.

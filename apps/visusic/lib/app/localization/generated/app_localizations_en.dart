@@ -304,6 +304,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openProject => 'Open project';
 
   @override
+  String get loadAudio => 'Load audio track';
+
+  @override
   String get save => 'Save';
 
   @override

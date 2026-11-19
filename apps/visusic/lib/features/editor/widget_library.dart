@@ -28,15 +28,19 @@ class _WidgetLibraryPanelState extends State<WidgetLibraryPanel> {
     final l10n = AppLocalizations.of(context);
     final language = Localizations.localeOf(context).languageCode;
     final query = _search.text.trim().toLowerCase();
-    final manifests = widget.controller.registry.manifests.where((manifest) {
-      final matchesCategory = _category == 'all' || manifest.category == _category;
-      final name = manifest.name.resolve(language).toLowerCase();
-      final matchesQuery = query.isEmpty ||
-          name.contains(query) ||
-          manifest.name.english.toLowerCase().contains(query) ||
-          manifest.tags.any((tag) => tag.toLowerCase().contains(query));
-      return matchesCategory && matchesQuery;
-    }).toList(growable: false);
+    final manifests = widget.controller.registry.manifests
+        .where((manifest) {
+          final matchesCategory =
+              _category == 'all' || manifest.category == _category;
+          final name = manifest.name.resolve(language).toLowerCase();
+          final matchesQuery =
+              query.isEmpty ||
+              name.contains(query) ||
+              manifest.name.english.toLowerCase().contains(query) ||
+              manifest.tags.any((tag) => tag.toLowerCase().contains(query));
+          return matchesCategory && matchesQuery;
+        })
+        .toList(growable: false);
     return Column(
       children: <Widget>[
         Padding(
@@ -58,7 +62,14 @@ class _WidgetLibraryPanelState extends State<WidgetLibraryPanel> {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 8),
             children: <Widget>[
-              for (final category in const <String>['all', 'basic', 'text', 'audio', 'background', 'meta'])
+              for (final category in const <String>[
+                'all',
+                'basic',
+                'text',
+                'audio',
+                'background',
+                'meta',
+              ])
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: ChoiceChip(
@@ -97,14 +108,15 @@ class _WidgetLibraryPanelState extends State<WidgetLibraryPanel> {
     );
   }
 
-  String _categoryLabel(AppLocalizations l10n, String category) => switch (category) {
-    'all' => l10n.all,
-    'basic' => l10n.categoryBasic,
-    'text' => l10n.categoryText,
-    'audio' => l10n.categoryAudio,
-    'background' => l10n.categoryBackground,
-    _ => l10n.categoryMeta,
-  };
+  String _categoryLabel(AppLocalizations l10n, String category) =>
+      switch (category) {
+        'all' => l10n.all,
+        'basic' => l10n.categoryBasic,
+        'text' => l10n.categoryText,
+        'audio' => l10n.categoryAudio,
+        'background' => l10n.categoryBackground,
+        _ => l10n.categoryMeta,
+      };
 
   @override
   void dispose() {
@@ -137,7 +149,10 @@ final class _LibraryCard extends StatelessWidget {
             color: Colors.transparent,
             child: SizedBox(width: 180, height: 112, child: preview),
           ),
-          childWhenDragging: Opacity(opacity: 0.45, child: _cardContent(context, preview)),
+          childWhenDragging: Opacity(
+            opacity: 0.45,
+            child: _cardContent(context, preview),
+          ),
           child: InkWell(
             key: Key('add-${manifest.id}'),
             onTap: () => controller.addWidget(manifest),
@@ -233,11 +248,13 @@ class _WidgetPaletteState extends State<WidgetPalette> {
     final l10n = AppLocalizations.of(context);
     final language = Localizations.localeOf(context).languageCode;
     final query = _search.text.toLowerCase().trim();
-    final results = widget.registry.manifests.where((manifest) {
-      return query.isEmpty ||
-          manifest.name.resolve(language).toLowerCase().contains(query) ||
-          manifest.tags.any((tag) => tag.contains(query));
-    }).toList(growable: false);
+    final results = widget.registry.manifests
+        .where((manifest) {
+          return query.isEmpty ||
+              manifest.name.resolve(language).toLowerCase().contains(query) ||
+              manifest.tags.any((tag) => tag.contains(query));
+        })
+        .toList(growable: false);
     return AlertDialog(
       title: Text(l10n.addWidget),
       content: SizedBox(

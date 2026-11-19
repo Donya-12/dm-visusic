@@ -78,6 +78,9 @@ final class _FakeProjectStorage implements ProjectStorage {
   Future<void> clearRecovery() async {}
 
   @override
+  Future<StoredBinaryFile?> openAudio() async => null;
+
+  @override
   Future<StoredBinaryFile?> openProject() async => toOpen;
 
   @override

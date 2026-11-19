@@ -101,7 +101,7 @@
   "undo": "Undo",
   "redo": "Redo",
   "openProject": "Open project",
-  "save": "Save",
+  "loadAudio": "Load audio track",  "save": "Save",
   "saveAs": "Save As",
   "shortcuts": "Keyboard shortcuts",
   "close": "Close",

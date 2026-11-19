@@ -303,6 +303,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get openProject => 'Открыть проект';
 
   @override
+  String get loadAudio => 'Загрузить аудио';
+
+  @override
   String get save => 'Сохранить';
 
   @override

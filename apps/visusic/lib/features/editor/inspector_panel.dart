@@ -25,7 +25,9 @@ final class InspectorPanel extends StatelessWidget {
     }
     final manifest = controller.registry.byId[layer.widgetId];
     if (manifest == null) {
-      return _EmptyInspector(message: '${l10n.unknownWidget}: ${layer.widgetId}');
+      return _EmptyInspector(
+        message: '${l10n.unknownWidget}: ${layer.widgetId}',
+      );
     }
     return DefaultTabController(
       length: 3,
@@ -42,7 +44,11 @@ final class InspectorPanel extends StatelessWidget {
           Expanded(
             child: TabBarView(
               children: <Widget>[
-                _DesignTab(controller: controller, layer: layer, manifest: manifest),
+                _DesignTab(
+                  controller: controller,
+                  layer: layer,
+                  manifest: manifest,
+                ),
                 _MotionTab(controller: controller, layer: layer),
                 _ReactionsTab(manifest: manifest, layer: layer),
               ],
@@ -102,7 +108,10 @@ final class _DesignTab extends StatelessWidget {
           decoration: InputDecoration(labelText: l10n.layerName),
           onFieldSubmitted: (value) {
             if (value.trim().isNotEmpty) {
-              controller.commitLayerChange(layer, layer.copyWith(name: value.trim()));
+              controller.commitLayerChange(
+                layer,
+                layer.copyWith(name: value.trim()),
+              );
             }
           },
         ),
@@ -115,7 +124,9 @@ final class _DesignTab extends StatelessWidget {
                 (candidate) => DropdownMenuItem<String>(
                   value: candidate.id,
                   child: Text(
-                    candidate.name.resolve(Localizations.localeOf(context).languageCode),
+                    candidate.name.resolve(
+                      Localizations.localeOf(context).languageCode,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -137,7 +148,9 @@ final class _DesignTab extends StatelessWidget {
                 layer,
                 layer.copyWith(locked: !layer.locked),
               ),
-              icon: Icon(layer.locked ? Icons.lock_rounded : Icons.lock_open_rounded),
+              icon: Icon(
+                layer.locked ? Icons.lock_rounded : Icons.lock_open_rounded,
+              ),
             ),
             IconButton(
               tooltip: layer.hidden ? l10n.show : l10n.hide,
@@ -145,7 +158,11 @@ final class _DesignTab extends StatelessWidget {
                 layer,
                 layer.copyWith(hidden: !layer.hidden),
               ),
-              icon: Icon(layer.hidden ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+              icon: Icon(
+                layer.hidden
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+              ),
             ),
             IconButton(
               tooltip: l10n.duplicate,
@@ -355,17 +372,27 @@ final class _AnimationEditor extends StatelessWidget {
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           initialValue: animation.style,
-          items: const <String>['none', 'fade', 'slide', 'scale', 'blurIn', 'maskWipe']
-              .map(
-                (style) => DropdownMenuItem<String>(
-                  value: style,
-                  child: Text(style),
-                ),
-              )
-              .toList(),
+          items:
+              const <String>[
+                    'none',
+                    'fade',
+                    'slide',
+                    'scale',
+                    'blurIn',
+                    'maskWipe',
+                  ]
+                  .map(
+                    (style) => DropdownMenuItem<String>(
+                      value: style,
+                      child: Text(style),
+                    ),
+                  )
+                  .toList(),
           onChanged: (style) {
             if (style != null) {
-              onChanged(LayerAnimation(style: style, durationMs: animation.durationMs));
+              onChanged(
+                LayerAnimation(style: style, durationMs: animation.durationMs),
+              );
             }
           },
         ),
@@ -373,12 +400,17 @@ final class _AnimationEditor extends StatelessWidget {
         TextFormField(
           key: ValueKey<String>('$label-${animation.durationMs}'),
           initialValue: animation.durationMs.toString(),
-          decoration: InputDecoration(labelText: l10n.duration, suffixText: 'ms'),
+          decoration: InputDecoration(
+            labelText: l10n.duration,
+            suffixText: 'ms',
+          ),
           keyboardType: TextInputType.number,
           onFieldSubmitted: (value) {
             final duration = int.tryParse(value);
             if (duration != null && duration >= 0 && duration <= 10000) {
-              onChanged(LayerAnimation(style: animation.style, durationMs: duration));
+              onChanged(
+                LayerAnimation(style: animation.style, durationMs: duration),
+              );
             }
           },
         ),
@@ -421,7 +453,9 @@ class _ParameterEditorState extends State<ParameterEditor> {
   Widget build(BuildContext context) {
     final parameter = widget.parameter;
     final value = widget.layer.params[parameter.id] ?? parameter.defaultValue;
-    final label = parameter.label.resolve(Localizations.localeOf(context).languageCode);
+    final label = parameter.label.resolve(
+      Localizations.localeOf(context).languageCode,
+    );
     return switch (parameter.type) {
       ParameterType.float || ParameterType.integer => _numeric(label, value),
       ParameterType.boolean => SwitchListTile(
@@ -431,7 +465,8 @@ class _ParameterEditorState extends State<ParameterEditor> {
         value: value == true,
         onChanged: (next) => _commit(_withValue(parameter.id, next)),
       ),
-      ParameterType.enumeration || ParameterType.choiceCards => DropdownButtonFormField<String>(
+      ParameterType.enumeration ||
+      ParameterType.choiceCards => DropdownButtonFormField<String>(
         key: ValueKey<String>('${widget.layer.id}-${parameter.id}-$value'),
         initialValue: value as String,
         decoration: InputDecoration(labelText: label, isDense: widget.compact),
@@ -459,12 +494,15 @@ class _ParameterEditorState extends State<ParameterEditor> {
         values: (value as List).cast<String>(),
         onChanged: (next) => _commit(_withValue(parameter.id, next)),
       ),
-      ParameterType.text || ParameterType.multiline || ParameterType.font => _TextParameter(
+      ParameterType.text ||
+      ParameterType.multiline ||
+      ParameterType.font => _TextParameter(
         key: ValueKey<String>('text-${widget.layer.id}-${parameter.id}'),
         label: label,
         value: value as String? ?? '',
         multiline: parameter.type == ParameterType.multiline,
-        onPreview: (next) => widget.controller.previewLayer(_withValue(parameter.id, next)),
+        onPreview: (next) =>
+            widget.controller.previewLayer(_withValue(parameter.id, next)),
         onCommit: _commitCurrent,
       ),
       ParameterType.image => OutlinedButton.icon(
@@ -473,9 +511,8 @@ class _ParameterEditorState extends State<ParameterEditor> {
             await widget.controller.importImage(widget.layer);
           } on Object catch (error) {
             if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(error.toString())),
-              );
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(error.toString())));
             }
           }
         },
@@ -521,10 +558,8 @@ class _ParameterEditorState extends State<ParameterEditor> {
               IconButton(
                 visualDensity: VisualDensity.compact,
                 tooltip: AppLocalizations.of(context).addKeyframe,
-                onPressed: () => widget.controller.addKeyframe(
-                  widget.layer,
-                  parameter.id,
-                ),
+                onPressed: () =>
+                    widget.controller.addKeyframe(widget.layer, parameter.id),
                 icon: const Icon(Icons.diamond_outlined, size: 17),
               ),
           ],
@@ -533,12 +568,18 @@ class _ParameterEditorState extends State<ParameterEditor> {
           value: current.clamp(minimum, maximum),
           min: minimum,
           max: maximum,
-          divisions: isInteger ? (maximum - minimum).round().clamp(1, 1000) : null,
-          label: isInteger ? current.round().toString() : current.toStringAsFixed(2),
+          divisions: isInteger
+              ? (maximum - minimum).round().clamp(1, 1000)
+              : null,
+          label: isInteger
+              ? current.round().toString()
+              : current.toStringAsFixed(2),
           onChangeStart: (_) => _dragBefore = widget.layer,
           onChanged: (next) {
             final normalized = isInteger ? next.round() : next;
-            widget.controller.previewLayer(_withValue(parameter.id, normalized));
+            widget.controller.previewLayer(
+              _withValue(parameter.id, normalized),
+            );
           },
           onChangeEnd: (_) => _commitCurrent(_dragBefore),
         ),
@@ -562,7 +603,8 @@ class _ParameterEditorState extends State<ParameterEditor> {
   }
 
   SceneLayer _withValue(String id, Object? value) {
-    final layer = widget.controller.project.layerById(widget.layer.id) ?? widget.layer;
+    final layer =
+        widget.controller.project.layerById(widget.layer.id) ?? widget.layer;
     return layer.copyWith(
       params: <String, Object?>{...layer.params, id: value},
     );
@@ -626,7 +668,9 @@ class _TextParameterState extends State<_TextParameter> {
       maxLines: widget.multiline ? 4 : 1,
       decoration: InputDecoration(labelText: widget.label),
       onTap: () {
-        _before = context.findAncestorWidgetOfExactType<ParameterEditor>()?.layer;
+        _before = context
+            .findAncestorWidgetOfExactType<ParameterEditor>()
+            ?.layer;
       },
       onChanged: widget.onPreview,
       onSubmitted: (_) => _focusNode.unfocus(),
@@ -644,7 +688,11 @@ class _TextParameterState extends State<_TextParameter> {
 }
 
 final class _ColorField extends StatelessWidget {
-  const _ColorField({required this.label, required this.value, required this.onChanged});
+  const _ColorField({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
   final String label;
   final String value;
   final ValueChanged<String> onChanged;
@@ -683,7 +731,11 @@ final class _ColorField extends StatelessWidget {
 }
 
 final class _GradientField extends StatelessWidget {
-  const _GradientField({required this.label, required this.values, required this.onChanged});
+  const _GradientField({
+    required this.label,
+    required this.values,
+    required this.onChanged,
+  });
   final String label;
   final List<String> values;
   final ValueChanged<List<String>> onChanged;
@@ -748,10 +800,22 @@ final class _ColorDialog extends StatefulWidget {
 
 class _ColorDialogState extends State<_ColorDialog> {
   static const List<String> _palette = <String>[
-    '#FFFFFF', '#B69CFF', '#7C4DFF', '#3DDC97',
-    '#3ABFF8', '#FFD84D', '#FF7A90', '#FF5252',
-    '#101014', '#26232E', '#F4EBFF', '#E8F8F0',
-    '#6930C3', '#009688', '#FF6D00', '#000000',
+    '#FFFFFF',
+    '#B69CFF',
+    '#7C4DFF',
+    '#3DDC97',
+    '#3ABFF8',
+    '#FFD84D',
+    '#FF7A90',
+    '#FF5252',
+    '#101014',
+    '#26232E',
+    '#F4EBFF',
+    '#E8F8F0',
+    '#6930C3',
+    '#009688',
+    '#FF6D00',
+    '#000000',
   ];
   late final TextEditingController _controller;
 
@@ -783,7 +847,9 @@ class _ColorDialogState extends State<_ColorDialog> {
                       decoration: BoxDecoration(
                         color: parseSceneColor(color),
                         shape: BoxShape.circle,
-                        border: Border.all(color: Theme.of(context).colorScheme.outline),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.outline,
+                        ),
                       ),
                     ),
                   ),
@@ -792,7 +858,9 @@ class _ColorDialogState extends State<_ColorDialog> {
             const SizedBox(height: 16),
             TextField(
               controller: _controller,
-              decoration: const InputDecoration(labelText: '#RRGGBB / #AARRGGBB'),
+              decoration: const InputDecoration(
+                labelText: '#RRGGBB / #AARRGGBB',
+              ),
             ),
           ],
         ),
@@ -805,7 +873,8 @@ class _ColorDialogState extends State<_ColorDialog> {
         FilledButton(
           onPressed: () {
             final value = _controller.text.trim();
-            if (RegExp(r'^#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$').hasMatch(value)) {
+            if (RegExp(r'^#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$')
+                .hasMatch(value)) {
               Navigator.of(context).pop(value.toUpperCase());
             }
           },
@@ -827,14 +896,33 @@ String _localizedOption(BuildContext context, String option) {
     return option;
   }
   return const <String, String>{
-    'left': 'Слева', 'center': 'По центру', 'right': 'Справа',
-    'regular': 'Обычный', 'medium': 'Средний', 'bold': 'Жирный',
-    'none': 'Нет', 'perLetter': 'По буквам', 'typewriter': 'Печатная машинка',
-    'fade': 'Плавно', 'slide': 'Сдвиг', 'cover': 'Заполнить',
-    'contain': 'Вписать', 'vinyl': 'Винил', 'square': 'Квадрат',
-    'circle': 'Круг', 'dust': 'Пыль', 'snow': 'Снег', 'rain': 'Дождь',
-    'petals': 'Лепестки', 'sparks': 'Искры', 'bottom': 'Снизу',
-    'top': 'Сверху', 'full': 'Весь слой', 'scale': 'Масштаб',
-    'blurIn': 'Размытие', 'maskWipe': 'Маска',
-  }[option] ?? option;
+        'left': 'Слева',
+        'center': 'По центру',
+        'right': 'Справа',
+        'regular': 'Обычный',
+        'medium': 'Средний',
+        'bold': 'Жирный',
+        'none': 'Нет',
+        'perLetter': 'По буквам',
+        'typewriter': 'Печатная машинка',
+        'fade': 'Плавно',
+        'slide': 'Сдвиг',
+        'cover': 'Заполнить',
+        'contain': 'Вписать',
+        'vinyl': 'Винил',
+        'square': 'Квадрат',
+        'circle': 'Круг',
+        'dust': 'Пыль',
+        'snow': 'Снег',
+        'rain': 'Дождь',
+        'petals': 'Лепестки',
+        'sparks': 'Искры',
+        'bottom': 'Снизу',
+        'top': 'Сверху',
+        'full': 'Весь слой',
+        'scale': 'Масштаб',
+        'blurIn': 'Размытие',
+        'maskWipe': 'Маска',
+      }[option] ??
+      option;
 }

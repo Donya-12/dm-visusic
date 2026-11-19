@@ -32,7 +32,11 @@ final class TimelinePanel extends StatelessWidget {
                     key: const Key('transport-play'),
                     tooltip: controller.playing ? l10n.pause : l10n.play,
                     onPressed: controller.togglePlayback,
-                    icon: Icon(controller.playing ? Icons.pause_rounded : Icons.play_arrow_rounded),
+                    icon: Icon(
+                      controller.playing
+                          ? Icons.pause_rounded
+                          : Icons.play_arrow_rounded,
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -48,9 +52,20 @@ final class TimelinePanel extends StatelessWidget {
                       onChanged: controller.seek,
                     ),
                   ),
-                  Icon(Icons.science_outlined, size: 16, color: Theme.of(context).colorScheme.primary),
+                  Icon(
+                    controller.hasAudio
+                        ? Icons.music_note_rounded
+                        : Icons.science_outlined,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   const SizedBox(width: 4),
-                  Text(l10n.demoSignal, style: Theme.of(context).textTheme.labelMedium),
+                  Text(
+                    controller.hasAudio
+                        ? '${controller.bpm.round()} BPM · ${controller.key}'
+                        : l10n.demoSignal,
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
                 ],
               ),
             ),
@@ -58,9 +73,17 @@ final class TimelinePanel extends StatelessWidget {
           const Divider(height: 1),
           Expanded(
             child: controller.project.layers.isEmpty
-                ? Center(child: Text(l10n.timelineEmpty, style: Theme.of(context).textTheme.bodySmall))
+                ? Center(
+                    child: Text(
+                      l10n.timelineEmpty,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  )
                 : ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     children: <Widget>[
                       for (final layer in controller.project.layers)
                         _TimingLane(
@@ -97,9 +120,13 @@ final class _TimingLane extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final labelWidth = 110.0;
-          final laneWidth = (constraints.maxWidth - labelWidth).clamp(10, double.infinity).toDouble();
+          final laneWidth = (constraints.maxWidth - labelWidth)
+              .clamp(10, double.infinity)
+              .toDouble();
           final left = layer.timing.inMs / durationMs * laneWidth;
-          final width = ((outMs - layer.timing.inMs) / durationMs * laneWidth).clamp(2, laneWidth).toDouble();
+          final width = ((outMs - layer.timing.inMs) / durationMs * laneWidth)
+              .clamp(2, laneWidth)
+              .toDouble();
           return Row(
             children: <Widget>[
               SizedBox(
@@ -121,9 +148,8 @@ final class _TimingLane extends StatelessWidget {
                       height: 14,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withValues(
-                            alpha: selected ? 0.9 : 0.45,
-                          ),
+                          color: Theme.of(context).colorScheme.primary
+                              .withValues(alpha: selected ? 0.9 : 0.45),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Row(

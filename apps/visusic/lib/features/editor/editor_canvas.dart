@@ -55,7 +55,10 @@ class _EditorCanvasState extends State<EditorCanvas> {
                 ('100%', '100%', Icons.percent_rounded),
               ])
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 2,
+                    vertical: 4,
+                  ),
                   child: ChoiceChip(
                     label: Text(zoom.$2),
                     avatar: Icon(zoom.$3, size: 16),
@@ -78,7 +81,11 @@ class _EditorCanvasState extends State<EditorCanvas> {
               IconButton(
                 tooltip: _phoneFrame ? l10n.phoneFrame : l10n.sceneFrame,
                 onPressed: () => setState(() => _phoneFrame = !_phoneFrame),
-                icon: Icon(_phoneFrame ? Icons.rectangle_rounded : Icons.smartphone_rounded),
+                icon: Icon(
+                  _phoneFrame
+                      ? Icons.rectangle_rounded
+                      : Icons.smartphone_rounded,
+                ),
               ),
               IconButton(
                 tooltip: '${l10n.grid} (${widget.controller.gridSize} px)',
@@ -106,7 +113,8 @@ class _EditorCanvasState extends State<EditorCanvas> {
               IconButton(
                 tooltip: l10n.safeArea,
                 onPressed: () => setState(() {
-                  widget.controller.showSafeArea = !widget.controller.showSafeArea;
+                  widget.controller.showSafeArea =
+                      !widget.controller.showSafeArea;
                 }),
                 icon: const Icon(Icons.shield_outlined),
               ),
@@ -115,12 +123,30 @@ class _EditorCanvasState extends State<EditorCanvas> {
                   tooltip: l10n.align,
                   onSelected: widget.controller.alignSelected,
                   itemBuilder: (_) => const <PopupMenuEntry<String>>[
-                    PopupMenuItem<String>(value: 'left', child: Text('Align left')),
-                    PopupMenuItem<String>(value: 'centerX', child: Text('Align horizontal centers')),
-                    PopupMenuItem<String>(value: 'right', child: Text('Align right')),
-                    PopupMenuItem<String>(value: 'top', child: Text('Align top')),
-                    PopupMenuItem<String>(value: 'centerY', child: Text('Align vertical centers')),
-                    PopupMenuItem<String>(value: 'bottom', child: Text('Align bottom')),
+                    PopupMenuItem<String>(
+                      value: 'left',
+                      child: Text('Align left'),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'centerX',
+                      child: Text('Align horizontal centers'),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'right',
+                      child: Text('Align right'),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'top',
+                      child: Text('Align top'),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'centerY',
+                      child: Text('Align vertical centers'),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'bottom',
+                      child: Text('Align bottom'),
+                    ),
                   ],
                   icon: const Icon(Icons.align_horizontal_left_rounded),
                 ),
@@ -136,9 +162,15 @@ class _EditorCanvasState extends State<EditorCanvas> {
               final availableWidth = math.max(1, constraints.maxWidth - 56);
               final availableHeight = math.max(1, constraints.maxHeight - 56);
               final baseScale = switch (_zoomMode) {
-                'fill' => math.max(availableWidth / canvas.width, availableHeight / canvas.height),
+                'fill' => math.max(
+                  availableWidth / canvas.width,
+                  availableHeight / canvas.height,
+                ),
                 '100%' => 1.0,
-                _ => math.min(availableWidth / canvas.width, availableHeight / canvas.height),
+                _ => math.min(
+                  availableWidth / canvas.width,
+                  availableHeight / canvas.height,
+                ),
               };
               final scale = baseScale * _zoom;
               final width = canvas.width * scale;
@@ -191,7 +223,9 @@ class _EditorCanvasState extends State<EditorCanvas> {
           );
           if (details.data.id == 'builtin.barSpectrum') {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(AppLocalizations.of(context).spectrumDropHint)),
+              SnackBar(
+                content: Text(AppLocalizations.of(context).spectrumDropHint),
+              ),
             );
           }
         }
@@ -228,8 +262,12 @@ class _EditorCanvasState extends State<EditorCanvas> {
                   child: IgnorePointer(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.16),
-                        border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
+                        color: Theme.of(context).colorScheme.primary
+                            .withValues(alpha: 0.16),
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.primary,
+                          width: 2,
+                        ),
                       ),
                     ),
                   ),
@@ -245,7 +283,9 @@ class _EditorCanvasState extends State<EditorCanvas> {
                     onGuides: (guides) => setState(() => _guides = guides),
                   ),
               if (project.layers.isEmpty)
-                Positioned.fill(child: _EmptyScene(onAdd: widget.onOpenPalette)),
+                Positioned.fill(
+                  child: _EmptyScene(onAdd: widget.onOpenPalette),
+                ),
               if (layer != null)
                 Positioned(
                   left: 12,
@@ -262,15 +302,20 @@ class _EditorCanvasState extends State<EditorCanvas> {
                             spacing: 12,
                             runSpacing: 8,
                             children: <Widget>[
-                              for (final parameter in controller.registry
-                                  .require(layer.widgetId)
-                                  .primaryParameters())
+                              for (final parameter
+                                  in controller.registry
+                                      .require(layer.widgetId)
+                                      .primaryParameters())
                                 SizedBox(
                                   width: 205,
                                   child: ParameterEditor(
-                                    key: ValueKey<String>('quick-${layer.id}-${parameter.id}'),
+                                    key: ValueKey<String>(
+                                      'quick-${layer.id}-${parameter.id}',
+                                    ),
                                     controller: controller,
-                                    layer: controller.project.layerById(layer.id)!,
+                                    layer: controller.project.layerById(
+                                      layer.id,
+                                    )!,
                                     parameter: parameter,
                                     compact: true,
                                   ),
@@ -355,9 +400,16 @@ final class _EmptyScene extends StatelessWidget {
             children: <Widget>[
               const Icon(Icons.auto_awesome_outlined, size: 36),
               const SizedBox(height: 12),
-              Text(l10n.emptySceneTitle, style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
+              Text(
+                l10n.emptySceneTitle,
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 8),
-              SizedBox(width: 360, child: Text(l10n.emptySceneBody, textAlign: TextAlign.center)),
+              SizedBox(
+                width: 360,
+                child: Text(l10n.emptySceneBody, textAlign: TextAlign.center),
+              ),
               const SizedBox(height: 16),
               Wrap(
                 spacing: 8,
@@ -365,16 +417,14 @@ final class _EmptyScene extends StatelessWidget {
                   FilledButton.icon(
                     key: const Key('demo-scene-button'),
                     onPressed: () {
-                      final editor = context.findAncestorWidgetOfExactType<EditorCanvas>();
+                      final editor = context
+                          .findAncestorWidgetOfExactType<EditorCanvas>();
                       editor?.controller.buildDemoScene();
                     },
                     icon: const Icon(Icons.auto_awesome_rounded),
                     label: Text(l10n.buildDemoScene),
                   ),
-                  OutlinedButton(
-                    onPressed: onAdd,
-                    child: Text(l10n.addWidget),
-                  ),
+                  OutlinedButton(onPressed: onAdd, child: Text(l10n.addWidget)),
                 ],
               ),
             ],
@@ -431,7 +481,10 @@ class _LayerControlState extends State<_LayerControl> {
             Positioned.fill(
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
-                onTap: () => widget.controller.select(layer.id, additive: HardwareKeyboard.instance.isControlPressed),
+                onTap: () => widget.controller.select(
+                  layer.id,
+                  additive: HardwareKeyboard.instance.isControlPressed,
+                ),
                 onPanStart: layer.locked ? null : _startMove,
                 onPanUpdate: layer.locked ? null : _updateMove,
                 onPanEnd: layer.locked ? null : _endEdit,
@@ -450,9 +503,14 @@ class _LayerControlState extends State<_LayerControl> {
             ),
             if (selected && !layer.locked) ...<Widget>[
               for (final handle in const <(double, double)>[
-                (-1, -1), (0, -1), (1, -1),
-                (-1, 0), (1, 0),
-                (-1, 1), (0, 1), (1, 1),
+                (-1, -1),
+                (0, -1),
+                (1, -1),
+                (-1, 0),
+                (1, 0),
+                (-1, 1),
+                (0, 1),
+                (1, 1),
               ])
                 _resizeHandle(handle, width, height),
               Positioned(
@@ -464,11 +522,22 @@ class _LayerControlState extends State<_LayerControl> {
                   onPanEnd: _endEdit,
                   child: const MouseRegion(
                     cursor: SystemMouseCursors.grab,
-                    child: CircleAvatar(radius: 8, child: Icon(Icons.rotate_right_rounded, size: 12)),
+                    child: CircleAvatar(
+                      radius: 8,
+                      child: Icon(Icons.rotate_right_rounded, size: 12),
+                    ),
                   ),
                 ),
               ),
-              Positioned(left: width / 2, top: -26, child: Container(width: 1, height: 18, color: Theme.of(context).colorScheme.primary)),
+              Positioned(
+                left: width / 2,
+                top: -26,
+                child: Container(
+                  width: 1,
+                  height: 18,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
             ],
           ],
         ),
@@ -534,7 +603,11 @@ class _LayerControlState extends State<_LayerControl> {
           .map((layer) => layer.rect)
           .toList(),
       gridSize: widget.controller.gridSize,
-      safeFactor: widget.controller.project.canvas.height > widget.controller.project.canvas.width ? 0.8 : 0.9,
+      safeFactor:
+          widget.controller.project.canvas.height >
+              widget.controller.project.canvas.width
+          ? 0.8
+          : 0.9,
       threshold: 8 / widget.scale,
     );
     widget.controller.previewLayer(current.copyWith(rect: snapped.rect));
@@ -573,7 +646,9 @@ class _LayerControlState extends State<_LayerControl> {
     }
     width = math.max(16, width).toDouble();
     height = math.max(16, height).toDouble();
-    if (HardwareKeyboard.instance.isShiftPressed && handle.$1 != 0 && handle.$2 != 0) {
+    if (HardwareKeyboard.instance.isShiftPressed &&
+        handle.$1 != 0 &&
+        handle.$2 != 0) {
       final ratio = start.width / start.height;
       if ((width / start.width - 1).abs() > (height / start.height - 1).abs()) {
         height = width / ratio;
@@ -587,14 +662,23 @@ class _LayerControlState extends State<_LayerControl> {
     }
     final current = widget.controller.project.layerById(before.id) ?? before;
     widget.controller.previewLayer(
-      current.copyWith(rect: SceneRect(x: x, y: y, width: width, height: height, rotation: start.rotation)),
+      current.copyWith(
+        rect: SceneRect(
+          x: x,
+          y: y,
+          width: width,
+          height: height,
+          rotation: start.rotation,
+        ),
+      ),
     );
   }
 
   void _startRotate(DragStartDetails details) {
     _before = widget.layer;
     _startRect = widget.layer.rect;
-    _rotationOffset = _pointerAngle(details.globalPosition) - widget.layer.rect.rotation;
+    _rotationOffset =
+        _pointerAngle(details.globalPosition) - widget.layer.rect.rotation;
   }
 
   void _updateRotate(DragUpdateDetails details) {
@@ -607,13 +691,20 @@ class _LayerControlState extends State<_LayerControl> {
       rotation = (rotation / 15).round() * 15.0;
     }
     final current = widget.controller.project.layerById(before.id) ?? before;
-    widget.controller.previewLayer(current.copyWith(rect: current.rect.copyWith(rotation: rotation)));
+    widget.controller.previewLayer(
+      current.copyWith(rect: current.rect.copyWith(rotation: rotation)),
+    );
   }
 
   double _pointerAngle(Offset global) {
-    final rect = widget.controller.project.layerById(widget.layer.id)?.rect ?? widget.layer.rect;
-    final box = widget.canvasKey.currentContext!.findRenderObject() as RenderBox;
-    final center = box.localToGlobal(Offset(rect.centerX * widget.scale, rect.centerY * widget.scale));
+    final rect =
+        widget.controller.project.layerById(widget.layer.id)?.rect ??
+        widget.layer.rect;
+    final box =
+        widget.canvasKey.currentContext!.findRenderObject() as RenderBox;
+    final center = box.localToGlobal(
+      Offset(rect.centerX * widget.scale, rect.centerY * widget.scale),
+    );
     final delta = global - center;
     return math.atan2(delta.dy, delta.dx) * 180 / math.pi + 90;
   }
@@ -638,20 +729,30 @@ class _LayerControlState extends State<_LayerControl> {
     final l10n = AppLocalizations.of(context);
     final action = await showMenu<String>(
       context: context,
-      position: RelativeRect.fromLTRB(details.globalPosition.dx, details.globalPosition.dy, details.globalPosition.dx, details.globalPosition.dy),
+      position: RelativeRect.fromLTRB(
+        details.globalPosition.dx,
+        details.globalPosition.dy,
+        details.globalPosition.dx,
+        details.globalPosition.dy,
+      ),
       items: <PopupMenuEntry<String>>[
         PopupMenuItem<String>(value: 'duplicate', child: Text(l10n.duplicate)),
         PopupMenuItem<String>(value: 'copy', child: Text(l10n.copy)),
         PopupMenuItem<String>(value: 'paste', child: Text(l10n.paste)),
         const PopupMenuDivider(),
         PopupMenuItem<String>(value: 'forward', child: Text(l10n.bringForward)),
-        PopupMenuItem<String>(value: 'backward', child: Text(l10n.sendBackward)),
+        PopupMenuItem<String>(
+          value: 'backward',
+          child: Text(l10n.sendBackward),
+        ),
         const PopupMenuDivider(),
         for (final manifest in widget.controller.registry.manifests)
           if (manifest.id != widget.layer.widgetId)
             PopupMenuItem<String>(
               value: 'replace:${manifest.id}',
-              child: Text('${l10n.replaceWidget}: ${manifest.name.resolve(Localizations.localeOf(context).languageCode)}'),
+              child: Text(
+                '${l10n.replaceWidget}: ${manifest.name.resolve(Localizations.localeOf(context).languageCode)}',
+              ),
             ),
         const PopupMenuDivider(),
         PopupMenuItem<String>(value: 'delete', child: Text(l10n.delete)),
@@ -664,14 +765,17 @@ class _LayerControlState extends State<_LayerControl> {
     if (layer == null) {
       return;
     }
-    final index = widget.controller.project.layers.indexWhere((item) => item.id == layer.id);
+    final index = widget.controller.project.layers.indexWhere(
+      (item) => item.id == layer.id,
+    );
     if (action == 'duplicate') {
       widget.controller.duplicateSelected();
     } else if (action == 'copy') {
       widget.controller.copySelected();
     } else if (action == 'paste') {
       widget.controller.paste();
-    } else if (action == 'forward' && index < widget.controller.project.layers.length - 1) {
+    } else if (action == 'forward' &&
+        index < widget.controller.project.layers.length - 1) {
       widget.controller.moveLayer(index, index + 1);
     } else if (action == 'backward' && index > 0) {
       widget.controller.moveLayer(index, index - 1);
@@ -687,7 +791,11 @@ class _LayerControlState extends State<_LayerControl> {
 }
 
 final class _EditorGuidesPainter extends CustomPainter {
-  _EditorGuidesPainter({required this.controller, required this.scale, required this.guides});
+  _EditorGuidesPainter({
+    required this.controller,
+    required this.scale,
+    required this.guides,
+  });
   final EditorController controller;
   final double scale;
   final List<SnapGuide> guides;
@@ -717,7 +825,12 @@ final class _EditorGuidesPainter extends CustomPainter {
       final safeWidth = width * factor;
       final safeHeight = height * factor;
       canvas.drawRect(
-        Rect.fromLTWH((width - safeWidth) / 2, (height - safeHeight) / 2, safeWidth, safeHeight),
+        Rect.fromLTWH(
+          (width - safeWidth) / 2,
+          (height - safeHeight) / 2,
+          safeWidth,
+          safeHeight,
+        ),
         Paint()
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1 / scale
@@ -728,14 +841,21 @@ final class _EditorGuidesPainter extends CustomPainter {
       ..color = const Color(0xFFFF537A)
       ..strokeWidth = 1 / scale;
     for (final guide in guides) {
-      final start = guide.isVertical ? Offset(guide.position, guide.start) : Offset(guide.start, guide.position);
-      final end = guide.isVertical ? Offset(guide.position, guide.end) : Offset(guide.end, guide.position);
+      final start = guide.isVertical
+          ? Offset(guide.position, guide.start)
+          : Offset(guide.start, guide.position);
+      final end = guide.isVertical
+          ? Offset(guide.position, guide.end)
+          : Offset(guide.end, guide.position);
       canvas.drawLine(start, end, paint);
       if (guide.distanceLabel != null) {
         final text = TextPainter(
           text: TextSpan(
             text: guide.distanceLabel,
-            style: TextStyle(color: const Color(0xFFFF537A), fontSize: 14 / scale),
+            style: TextStyle(
+              color: const Color(0xFFFF537A),
+              fontSize: 14 / scale,
+            ),
           ),
           textDirection: TextDirection.ltr,
         )..layout();
@@ -745,7 +865,8 @@ final class _EditorGuidesPainter extends CustomPainter {
             : midpoint + Offset(6 / scale, -text.height);
         canvas.drawRRect(
           RRect.fromRectAndRadius(
-            (labelOffset - const Offset(2, 2)) & Size(text.width + 4, text.height + 4),
+            (labelOffset - const Offset(2, 2)) &
+                Size(text.width + 4, text.height + 4),
             Radius.circular(3 / scale),
           ),
           Paint()..color = const Color(0xFF202028),

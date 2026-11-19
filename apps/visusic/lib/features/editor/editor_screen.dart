@@ -53,12 +53,13 @@ class _EditorScreenState extends State<EditorScreen>
   void initState() {
     super.initState();
     _ownsController = widget.controller == null;
-    _controller = widget.controller ??
-        EditorController(
-          registry: widget.registry,
-          storage: widget.storage ?? FileProjectStorage(),
-        )
-      ..startAutosave();
+    _controller =
+        widget.controller ??
+              EditorController(
+                registry: widget.registry,
+                storage: widget.storage ?? FileProjectStorage(),
+              )
+          ..startAutosave();
     _controller.addListener(_syncTicker);
     _ticker = createTicker(_controller.tick);
     WidgetsBinding.instance.addPostFrameCallback((_) => _offerRecovery());
@@ -71,11 +72,18 @@ class _EditorScreenState extends State<EditorScreen>
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.keyS, control: true): () =>
             _perform(_controller.save),
-        const SingleActivator(LogicalKeyboardKey.keyS, control: true, shift: true): () =>
+        const SingleActivator(
+          LogicalKeyboardKey.keyS,
+          control: true,
+          shift: true,
+        ): () =>
             _perform(() => _controller.save(saveAs: true)),
-        const SingleActivator(LogicalKeyboardKey.keyO, control: true): _openProject,
-        const SingleActivator(LogicalKeyboardKey.keyZ, control: true): _controller.undo,
-        const SingleActivator(LogicalKeyboardKey.keyY, control: true): _controller.redo,
+        const SingleActivator(LogicalKeyboardKey.keyO, control: true):
+            _openProject,
+        const SingleActivator(LogicalKeyboardKey.keyZ, control: true):
+            _controller.undo,
+        const SingleActivator(LogicalKeyboardKey.keyY, control: true):
+            _controller.redo,
         const SingleActivator(LogicalKeyboardKey.keyD, control: true):
             _controller.duplicateSelected,
         const SingleActivator(LogicalKeyboardKey.keyC, control: true):
@@ -85,14 +93,22 @@ class _EditorScreenState extends State<EditorScreen>
         const SingleActivator(LogicalKeyboardKey.keyA, control: true):
             _controller.selectAll,
         const SingleActivator(LogicalKeyboardKey.keyW): _openPalette,
-        const SingleActivator(LogicalKeyboardKey.delete): _controller.deleteSelected,
-        const SingleActivator(LogicalKeyboardKey.escape): () => _controller.select(null),
-        const SingleActivator(LogicalKeyboardKey.arrowLeft): () => _nudge(const Offset(-1, 0)),
-        const SingleActivator(LogicalKeyboardKey.arrowRight): () => _nudge(const Offset(1, 0)),
-        const SingleActivator(LogicalKeyboardKey.arrowUp): () => _nudge(const Offset(0, -1)),
-        const SingleActivator(LogicalKeyboardKey.arrowDown): () => _nudge(const Offset(0, 1)),
-        const SingleActivator(LogicalKeyboardKey.keyK, control: true): _addPrimaryKeyframe,
-        const SingleActivator(LogicalKeyboardKey.slash, shift: true): _showShortcuts,
+        const SingleActivator(LogicalKeyboardKey.delete):
+            _controller.deleteSelected,
+        const SingleActivator(LogicalKeyboardKey.escape): () =>
+            _controller.select(null),
+        const SingleActivator(LogicalKeyboardKey.arrowLeft): () =>
+            _nudge(const Offset(-1, 0)),
+        const SingleActivator(LogicalKeyboardKey.arrowRight): () =>
+            _nudge(const Offset(1, 0)),
+        const SingleActivator(LogicalKeyboardKey.arrowUp): () =>
+            _nudge(const Offset(0, -1)),
+        const SingleActivator(LogicalKeyboardKey.arrowDown): () =>
+            _nudge(const Offset(0, 1)),
+        const SingleActivator(LogicalKeyboardKey.keyK, control: true):
+            _addPrimaryKeyframe,
+        const SingleActivator(LogicalKeyboardKey.slash, shift: true):
+            _showShortcuts,
       },
       child: Focus(
         autofocus: true,
@@ -128,7 +144,12 @@ class _EditorScreenState extends State<EditorScreen>
                         if (_controller.dirty)
                           Padding(
                             padding: const EdgeInsets.only(left: 6),
-                            child: Text('•', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                            child: Text(
+                              '•',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
                           ),
                       ],
                     ),
@@ -140,8 +161,14 @@ class _EditorScreenState extends State<EditorScreen>
                       underline: const SizedBox.shrink(),
                       items: <DropdownMenuItem<String>>[
                         for (final preset in AspectPresets.values)
-                          DropdownMenuItem<String>(value: preset.aspect, child: Text(preset.aspect)),
-                        const DropdownMenuItem<String>(value: 'custom', child: Text('Custom')),
+                          DropdownMenuItem<String>(
+                            value: preset.aspect,
+                            child: Text(preset.aspect),
+                          ),
+                        const DropdownMenuItem<String>(
+                          value: 'custom',
+                          child: Text('Custom'),
+                        ),
                       ],
                       onChanged: _changeAspect,
                     ),
@@ -159,6 +186,17 @@ class _EditorScreenState extends State<EditorScreen>
                       icon: const Icon(Icons.redo_rounded),
                     ),
                     IconButton(
+                      key: const Key('load-audio-button'),
+                      tooltip: l10n.loadAudio,
+                      onPressed: _controller.busy
+                          ? null
+                          : () => _perform(
+                              _controller.openAudioFile,
+                              showSuccess: false,
+                            ),
+                      icon: const Icon(Icons.music_note_outlined),
+                    ),
+                    IconButton(
                       key: const Key('open-button'),
                       tooltip: l10n.openProject,
                       onPressed: _controller.busy ? null : _openProject,
@@ -167,7 +205,9 @@ class _EditorScreenState extends State<EditorScreen>
                     IconButton(
                       key: const Key('save-button'),
                       tooltip: l10n.save,
-                      onPressed: _controller.busy ? null : () => _perform(_controller.save),
+                      onPressed: _controller.busy
+                          ? null
+                          : () => _perform(_controller.save),
                       icon: const Icon(Icons.save_outlined),
                     ),
                     PopupMenuButton<String>(
@@ -179,8 +219,14 @@ class _EditorScreenState extends State<EditorScreen>
                         }
                       },
                       itemBuilder: (_) => <PopupMenuEntry<String>>[
-                        PopupMenuItem<String>(value: 'saveAs', child: Text(l10n.saveAs)),
-                        PopupMenuItem<String>(value: 'shortcuts', child: Text(l10n.shortcuts)),
+                        PopupMenuItem<String>(
+                          value: 'saveAs',
+                          child: Text(l10n.saveAs),
+                        ),
+                        PopupMenuItem<String>(
+                          value: 'shortcuts',
+                          child: Text(l10n.shortcuts),
+                        ),
                       ],
                     ),
                   ],
@@ -188,11 +234,15 @@ class _EditorScreenState extends State<EditorScreen>
                 body: SafeArea(
                   child: Column(
                     children: <Widget>[
-                      if (_controller.busy) const LinearProgressIndicator(minHeight: 2),
+                      if (_controller.busy)
+                        const LinearProgressIndicator(minHeight: 2),
                       Expanded(
                         child: Row(
                           children: <Widget>[
-                            SizedBox(width: 280, child: EditorLeftPanel(controller: _controller)),
+                            SizedBox(
+                              width: 280,
+                              child: EditorLeftPanel(controller: _controller),
+                            ),
                             const VerticalDivider(width: 1),
                             Expanded(
                               child: EditorCanvas(
@@ -201,11 +251,17 @@ class _EditorScreenState extends State<EditorScreen>
                               ),
                             ),
                             const VerticalDivider(width: 1),
-                            SizedBox(width: 320, child: InspectorPanel(controller: _controller)),
+                            SizedBox(
+                              width: 320,
+                              child: InspectorPanel(controller: _controller),
+                            ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 170, child: TimelinePanel(controller: _controller)),
+                      SizedBox(
+                        height: 170,
+                        child: TimelinePanel(controller: _controller),
+                      ),
                     ],
                   ),
                 ),
@@ -244,7 +300,8 @@ class _EditorScreenState extends State<EditorScreen>
     }
     final manifest = _controller.registry.require(layer.widgetId);
     for (final parameter in manifest.primaryParameters()) {
-      if (parameter.type == ParameterType.float || parameter.type == ParameterType.integer) {
+      if (parameter.type == ParameterType.float ||
+          parameter.type == ParameterType.integer) {
         _controller.addKeyframe(layer, parameter.id);
         return;
       }
@@ -266,8 +323,12 @@ class _EditorScreenState extends State<EditorScreen>
   }
 
   Future<void> _showCustomAspect() async {
-    final width = TextEditingController(text: _controller.project.canvas.width.toString());
-    final height = TextEditingController(text: _controller.project.canvas.height.toString());
+    final width = TextEditingController(
+      text: _controller.project.canvas.width.toString(),
+    );
+    final height = TextEditingController(
+      text: _controller.project.canvas.height.toString(),
+    );
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -290,8 +351,14 @@ class _EditorScreenState extends State<EditorScreen>
             ],
           ),
           actions: <Widget>[
-            TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.cancel)),
-            FilledButton(onPressed: () => Navigator.of(context).pop(true), child: Text(l10n.apply)),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(l10n.apply),
+            ),
           ],
         );
       },
@@ -299,8 +366,15 @@ class _EditorScreenState extends State<EditorScreen>
     if (confirmed == true) {
       final w = int.tryParse(width.text);
       final h = int.tryParse(height.text);
-      if (w != null && h != null && w >= 16 && h >= 16 && w <= 8192 && h <= 8192) {
-        _controller.changeCanvas(SceneCanvas(width: w, height: h, aspect: 'custom'));
+      if (w != null &&
+          h != null &&
+          w >= 16 &&
+          h >= 16 &&
+          w <= 8192 &&
+          h <= 8192) {
+        _controller.changeCanvas(
+          SceneCanvas(width: w, height: h, aspect: 'custom'),
+        );
       }
     }
     width.dispose();
@@ -317,8 +391,14 @@ class _EditorScreenState extends State<EditorScreen>
           title: Text(l10n.projectName),
           content: TextField(controller: name, autofocus: true),
           actions: <Widget>[
-            TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.cancel)),
-            FilledButton(onPressed: () => Navigator.of(context).pop(name.text), child: Text(l10n.apply)),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(name.text),
+              child: Text(l10n.apply),
+            ),
           ],
         );
       },
@@ -348,9 +428,18 @@ class _EditorScreenState extends State<EditorScreen>
           title: Text(l10n.unsavedTitle),
           content: Text(l10n.unsavedBody),
           actions: <Widget>[
-            TextButton(onPressed: () => Navigator.of(context).pop('cancel'), child: Text(l10n.keepEditing)),
-            TextButton(onPressed: () => Navigator.of(context).pop('discard'), child: Text(l10n.discard)),
-            FilledButton(onPressed: () => Navigator.of(context).pop('save'), child: Text(l10n.saveAndClose)),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop('cancel'),
+              child: Text(l10n.keepEditing),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop('discard'),
+              child: Text(l10n.discard),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop('save'),
+              child: Text(l10n.saveAndClose),
+            ),
           ],
         );
       },
@@ -372,7 +461,10 @@ class _EditorScreenState extends State<EditorScreen>
     }
   }
 
-  Future<T?> _perform<T>(Future<T> Function() action, {bool showSuccess = true}) async {
+  Future<T?> _perform<T>(
+    Future<T> Function() action, {
+    bool showSuccess = true,
+  }) async {
     try {
       final result = await action();
       if (mounted && showSuccess && result is String) {
@@ -383,9 +475,8 @@ class _EditorScreenState extends State<EditorScreen>
       return result;
     } on Object catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.toString())),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error.toString())));
       }
       return null;
     }
@@ -409,8 +500,14 @@ class _EditorScreenState extends State<EditorScreen>
             title: Text(l10n.recoveryTitle),
             content: Text(l10n.recoveryBody),
             actions: <Widget>[
-              TextButton(onPressed: () => Navigator.of(context).pop('discard'), child: Text(l10n.dismiss)),
-              FilledButton(onPressed: () => Navigator.of(context).pop('restore'), child: Text(l10n.restore)),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop('discard'),
+                child: Text(l10n.dismiss),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop('restore'),
+                child: Text(l10n.restore),
+              ),
             ],
           );
         },
@@ -422,7 +519,8 @@ class _EditorScreenState extends State<EditorScreen>
       }
     } on Object catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error.toString())));
       }
     }
   }
@@ -462,7 +560,8 @@ class _EditorScreenState extends State<EditorScreen>
 
   bool get _editorHasFocus {
     final focus = FocusManager.instance.primaryFocus;
-    final editable = focus?.context?.findAncestorWidgetOfExactType<EditableText>();
+    final editable = focus?.context
+        ?.findAncestorWidgetOfExactType<EditableText>();
     return editable == null;
   }
 

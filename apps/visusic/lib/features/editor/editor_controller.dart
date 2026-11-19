@@ -7,6 +7,8 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
+import 'package:visusic/platform/ffmpeg_audio_decoder.dart';
+import 'package:visusic_audio/visusic_audio.dart';
 import 'package:visusic_core/visusic_core.dart';
 import 'package:visusic_platform/visusic_platform.dart';
 import 'package:visusic_widgets_builtin/visusic_widgets_builtin.dart';
@@ -34,6 +36,7 @@ final class EditorController extends ChangeNotifier {
   final BindingResolver _bindingResolver = BindingResolver();
   final Set<String> _selectedIds = <String>{};
   final Map<String, ui.Image> _images = <String, ui.Image>{};
+  AnalysisCache? _cache;
   Timer? _autosaveTimer;
   FeatureSnapshot _features = FeatureSnapshot.silent(30);
   String? _currentPath;
@@ -42,6 +45,7 @@ final class EditorController extends ChangeNotifier {
   bool _playing = false;
   int _nextLayerId = 1;
   int _nextAssetId = 1;
+
   /// Snap/grid interval in logical pixels.
   int gridSize = 8;
 
@@ -61,6 +65,18 @@ final class EditorController extends ChangeNotifier {
 
   /// Decoded project images.
   Map<String, ui.Image> get images => Map.unmodifiable(_images);
+
+  /// Whether a real analyzed audio cache is loaded.
+  bool get hasAudio => _cache != null;
+
+  /// Estimated tempo when audio is loaded, otherwise zero.
+  double get bpm => _cache?.bpm ?? 0;
+
+  /// Estimated key when audio is loaded, otherwise empty.
+  String get key => _cache?.key ?? '';
+
+  /// Interleaved min/max waveform peaks for the timeline.
+  Float32List get waveformPeaks => _cache?.waveformPeaks ?? Float32List(512);
 
   /// Current deterministic demo feature frame.
   FeatureSnapshot get features => _features;
@@ -131,14 +147,12 @@ final class EditorController extends ChangeNotifier {
       return;
     }
     final next = _features.time + elapsed.inMilliseconds / 1000;
-    if (next >= project.canvas.duration) {
-      _features = FeatureSnapshot.demo(
-        project.canvas.duration,
-        project.canvas.duration,
-      );
+    final duration = project.canvas.duration;
+    if (next >= duration) {
+      _features = _featuresAt(duration);
       _playing = false;
     } else {
-      _features = FeatureSnapshot.demo(next, project.canvas.duration);
+      _features = _featuresAt(next);
     }
     _refreshExpressions();
     notifyListeners();
@@ -150,9 +164,55 @@ final class EditorController extends ChangeNotifier {
         .clamp(0, project.canvas.duration)
         .toDouble();
     _bindingResolver.reset();
-    _features = FeatureSnapshot.demo(seconds, project.canvas.duration);
+    _features = _featuresAt(seconds);
     _refreshExpressions();
     notifyListeners();
+  }
+
+  /// Loads, decodes, and analyzes an audio file for feature playback.
+  Future<void> loadAudio(StoredBinaryFile file) async {
+    await _runBusy(() async {
+      final decoder = file.name.toLowerCase().endsWith('.wav')
+          ? const WavDecoder() as AudioDecoder
+          : const FfmpegAudioDecoder();
+      final pcm = await decoder.decode(file.bytes);
+      final result = await compute(_analyzePcm, pcm);
+      _cache = AnalysisCache(
+        sampleRate: result.sampleRate,
+        hopSize: result.hopSize,
+        bpm: result.bpm,
+        key: result.key,
+        duration: result.duration,
+        bandNames: result.bandNames,
+        frames: result.frames,
+        waveformPeaks: result.waveformPeaks,
+      );
+      _bundle = _bundle.copyWith(
+        project: project.copyWith(
+          canvas: project.canvas.copyWith(duration: result.duration),
+        ),
+      );
+      _bindingResolver.reset();
+      _features = _featuresAt(0);
+      _refreshExpressions();
+      notifyListeners();
+    });
+  }
+
+  FeatureSnapshot _featuresAt(double seconds) {
+    final cache = _cache;
+    if (cache != null) {
+      return cache.frameAt(seconds);
+    }
+    return FeatureSnapshot.demo(seconds, project.canvas.duration);
+  }
+
+  /// Opens an audio picker, then decodes and analyzes the selection.
+  Future<void> openAudioFile() async {
+    final file = await storage.openAudio();
+    if (file != null) {
+      await loadAudio(file);
+    }
   }
 
   /// Selects a layer, optionally adding/removing it from multi-selection.
@@ -642,11 +702,7 @@ final class EditorController extends ChangeNotifier {
   }
 
   void _refreshExpressions() {
-    expressionValues = _bindingResolver.resolve(
-      project,
-      registry,
-      _features,
-    );
+    expressionValues = _bindingResolver.resolve(project, registry, _features);
   }
 
   SceneLayer _duplicateLayer(SceneLayer source) {
@@ -760,3 +816,5 @@ String _mimeType(String name) {
   }
   return 'image/png';
 }
+
+AnalysisResult _analyzePcm(PcmBuffer buffer) => AudioAnalyzer.analyze(buffer);
