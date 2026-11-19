@@ -666,6 +666,48 @@ abstract class AppLocalizations {
   /// **'Load audio track'**
   String get loadAudio;
 
+  /// No description provided for @lyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Lyrics'**
+  String get lyrics;
+
+  /// No description provided for @importLyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Import .lrc file'**
+  String get importLyrics;
+
+  /// No description provided for @searchLyrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Search LRCLIB'**
+  String get searchLyrics;
+
+  /// No description provided for @lyricsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Track title'**
+  String get lyricsTitle;
+
+  /// No description provided for @lyricsArtist.
+  ///
+  /// In en, this message translates to:
+  /// **'Artist'**
+  String get lyricsArtist;
+
+  /// No description provided for @noLyricsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here yet'**
+  String get noLyricsFound;
+
+  /// No description provided for @tapToSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to sync the next line'**
+  String get tapToSync;
+
   /// No description provided for @save.
   ///
   /// In en, this message translates to:

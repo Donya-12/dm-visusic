@@ -40,6 +40,12 @@ final class TimelinePanel extends StatelessWidget {
                           : Icons.play_arrow_rounded,
                     ),
                   ),
+                  if (controller.hasLyrics)
+                    IconButton(
+                      tooltip: l10n.tapToSync,
+                      onPressed: controller.tapToSync,
+                      icon: const Icon(Icons.touch_app_outlined),
+                    ),
                   const SizedBox(width: 8),
                   Text(
                     '${_time(controller.features.time)} / ${_time(controller.features.duration)}',

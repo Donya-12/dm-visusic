@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2026 Donya
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
@@ -249,9 +250,102 @@ final class EditorController extends ChangeNotifier {
   /// Replaces the synchronized lyrics and refreshes renderer values.
   void setLyrics(LyricsTrack lyrics) {
     _lyrics = lyrics;
+    _bundle = _bundle.copyWith(project: project.copyWith(lyrics: lyrics));
     _features = _applyLyrics(_features, _features.time * 1000);
+    _dirty = true;
     _refreshExpressions();
     notifyListeners();
+  }
+
+  /// Opens an .lrc/.txt picker and parses the selection.
+  Future<void> importLyricsFile() async {
+    final file = await storage.openLyrics();
+    if (file == null) {
+      return;
+    }
+    setLyrics(LrcParser.parse(utf8.decode(file.bytes)));
+  }
+
+  /// Sets lyrics from synced or plain text, spacing plain lines evenly.
+  void setLyricsFromText(String text) {
+    try {
+      setLyrics(LrcParser.parse(text));
+    } on LyricsParseException {
+      final plain = text
+          .split(RegExp(r'\r?\n'))
+          .map((line) => line.trim())
+          .where((line) => line.isNotEmpty)
+          .toList(growable: false);
+      if (plain.isEmpty) {
+        return;
+      }
+      final durationMs = project.canvas.duration * 1000;
+      final step = durationMs / plain.length;
+      setLyrics(
+        LyricsTrack(
+          lines: <LyricLine>[
+            for (var index = 0; index < plain.length; index++)
+              LyricLine(timeMs: index * step, text: plain[index]),
+          ],
+        ),
+      );
+    }
+  }
+
+  /// Shifts every lyric line by a millisecond offset.
+  void nudgeLyrics(double deltaMs) {
+    final lyrics = _lyrics;
+    if (lyrics == null) {
+      return;
+    }
+    setLyrics(
+      LyricsTrack(
+        lines: lyrics.lines
+            .map(
+              (line) => LyricLine(
+                timeMs: line.timeMs + deltaMs,
+                text: line.text,
+                words: line.words
+                    .map(
+                      (word) =>
+                          LyricWord(timeMs: word.timeMs + deltaMs, text: word.text),
+                    )
+                    .toList(growable: false),
+                translation: line.translation,
+                speaker: line.speaker,
+              ),
+            )
+            .toList(growable: false),
+        offsetMs: lyrics.offsetMs,
+        title: lyrics.title,
+        artist: lyrics.artist,
+      ),
+    );
+  }
+
+  /// Aligns the next unsynced line to the current playhead.
+  void tapToSync() {
+    final lyrics = _lyrics;
+    if (lyrics == null) {
+      return;
+    }
+    final currentMs = _features.time * 1000;
+    var targetIndex = lyrics.lines.length - 1;
+    for (var index = 0; index < lyrics.lines.length; index++) {
+      if (lyrics.lines[index].timeMs > currentMs) {
+        targetIndex = index;
+        break;
+      }
+    }
+    final lines = <LyricLine>[...lyrics.lines];
+    lines[targetIndex] = LyricLine(
+      timeMs: currentMs,
+      text: lines[targetIndex].text,
+      words: lines[targetIndex].words,
+      translation: lines[targetIndex].translation,
+      speaker: lines[targetIndex].speaker,
+    );
+    setLyrics(LyricsTrack(lines: lines, title: lyrics.title, artist: lyrics.artist));
   }
 
   Future<void> _toggleAudioPlayback() async {
@@ -748,7 +842,7 @@ final class EditorController extends ChangeNotifier {
   void _load(ProjectBundle decoded, String? path) {
     _resetPlayer();
     _bundle = decoded;
-    _lyrics = null;
+    _lyrics = decoded.project.lyrics;
     _currentPath = path;
     _dirty = path == null;
     _history.clear();

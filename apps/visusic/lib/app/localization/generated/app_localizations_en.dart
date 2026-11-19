@@ -307,6 +307,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadAudio => 'Load audio track';
 
   @override
+  String get lyrics => 'Lyrics';
+
+  @override
+  String get importLyrics => 'Import .lrc file';
+
+  @override
+  String get searchLyrics => 'Search LRCLIB';
+
+  @override
+  String get lyricsTitle => 'Track title';
+
+  @override
+  String get lyricsArtist => 'Artist';
+
+  @override
+  String get noLyricsFound => 'Nothing here yet';
+
+  @override
+  String get tapToSync => 'Tap to sync the next line';
+
+  @override
   String get save => 'Save';
 
   @override

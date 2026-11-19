@@ -11,6 +11,18 @@ final class LyricWord {
 
   /// Word text.
   final String text;
+
+  /// Serializes this word.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'timeMs': timeMs,
+    'text': text,
+  };
+
+  /// Parses a word.
+  factory LyricWord.fromJson(Map<String, Object?> json) => LyricWord(
+    timeMs: (json['timeMs'] as num).toDouble(),
+    text: json['text'] as String,
+  );
 }
 
 /// One synchronized lyric line with optional word timing and translation.
@@ -38,6 +50,26 @@ final class LyricLine {
 
   /// Optional speaker label such as A or B.
   final String? speaker;
+
+  /// Serializes this line.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'timeMs': timeMs,
+    'text': text,
+    'words': words.map((word) => word.toJson()).toList(growable: false),
+    'translation': translation,
+    'speaker': speaker,
+  };
+
+  /// Parses a line.
+  factory LyricLine.fromJson(Map<String, Object?> json) => LyricLine(
+    timeMs: (json['timeMs'] as num).toDouble(),
+    text: json['text'] as String,
+    words: (json['words'] as List? ?? const <Object?>[])
+        .map((word) => LyricWord.fromJson((word as Map).cast<String, Object?>()))
+        .toList(growable: false),
+    translation: json['translation'] as String?,
+    speaker: json['speaker'] as String?,
+  );
 }
 
 /// A parsed, sorted lyric track.
@@ -64,6 +96,27 @@ final class LyricsTrack {
 
   /// Whether any line carries per-word timing.
   bool get hasWordTiming => lines.any((line) => line.words.isNotEmpty);
+
+  /// Serializes the complete track.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'offsetMs': offsetMs,
+    'title': title,
+    'artist': artist,
+    'lines': lines.map((line) => line.toJson()).toList(growable: false),
+  };
+
+  /// Parses a complete track.
+  factory LyricsTrack.fromJson(Map<String, Object?> json) => LyricsTrack(
+    lines: (json['lines'] as List? ?? const <Object?>[])
+        .map(
+          (line) =>
+              LyricLine.fromJson((line as Map).cast<String, Object?>()),
+        )
+        .toList(growable: false),
+    offsetMs: (json['offsetMs'] as num? ?? 0).toDouble(),
+    title: json['title'] as String?,
+    artist: json['artist'] as String?,
+  );
 
   static List<LyricLine> _sortedLines(List<LyricLine> source) {
     final copy = <LyricLine>[...source];

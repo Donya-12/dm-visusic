@@ -102,6 +102,24 @@ final class FileProjectStorage implements ProjectStorage {
   }
 
   @override
+  Future<StoredBinaryFile?> openLyrics() async {
+    final file = await openFile(
+      acceptedTypeGroups: const <XTypeGroup>[
+        XTypeGroup(label: 'Lyrics', extensions: <String>['lrc', 'txt']),
+      ],
+    );
+    if (file == null) {
+      return null;
+    }
+    await _checkLength(file, _maxProjectBytes);
+    return StoredBinaryFile(
+      path: file.path,
+      name: file.name,
+      bytes: await file.readAsBytes(),
+    );
+  }
+
+  @override
   Future<void> writeRecovery(String name, Uint8List bytes) async {
     final file = await _recoveryFile();
     await _writeAtomic(file, bytes);

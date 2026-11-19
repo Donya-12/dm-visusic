@@ -306,6 +306,27 @@ class AppLocalizationsRu extends AppLocalizations {
   String get loadAudio => 'Загрузить аудио';
 
   @override
+  String get lyrics => 'Текст песни';
+
+  @override
+  String get importLyrics => 'Импортировать .lrc';
+
+  @override
+  String get searchLyrics => 'Найти в LRCLIB';
+
+  @override
+  String get lyricsTitle => 'Название трека';
+
+  @override
+  String get lyricsArtist => 'Исполнитель';
+
+  @override
+  String get noLyricsFound => 'Пока ничего нет';
+
+  @override
+  String get tapToSync => 'Тапни, чтобы синхронизировать строку';
+
+  @override
   String get save => 'Сохранить';
 
   @override

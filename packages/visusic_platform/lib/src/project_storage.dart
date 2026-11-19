@@ -41,6 +41,9 @@ abstract interface class ProjectStorage {
   /// Opens a native audio picker.
   Future<StoredBinaryFile?> openAudio();
 
+  /// Opens a native lyric-file picker.
+  Future<StoredBinaryFile?> openLyrics();
+
   /// Writes crash-recovery data when the document is dirty.
   Future<void> writeRecovery(String name, Uint8List bytes);
 

@@ -3,6 +3,8 @@
 
 import 'dart:collection';
 
+import 'package:visusic_core/src/lyrics.dart';
+
 /// A read-only JSON object used by project serializers.
 typedef JsonObject = Map<String, Object?>;
 
@@ -532,6 +534,7 @@ final class SceneProject {
     List<ProjectAsset>? assets,
     this.audioPath,
     this.audioAnalysis,
+    this.lyrics,
   }) : layers = List<SceneLayer>.unmodifiable(layers ?? const <SceneLayer>[]),
        assets = List<ProjectAsset>.unmodifiable(
          assets ?? const <ProjectAsset>[],
@@ -555,6 +558,9 @@ final class SceneProject {
   /// ZIP-relative analysis cache name, when persisted.
   final String? audioAnalysis;
 
+  /// Synchronized lyrics, when loaded.
+  final LyricsTrack? lyrics;
+
   /// Returns a layer by ID or null.
   SceneLayer? layerById(String id) {
     for (final layer in layers) {
@@ -573,6 +579,7 @@ final class SceneProject {
     List<ProjectAsset>? assets,
     Object? audioPath = _notProvided,
     Object? audioAnalysis = _notProvided,
+    Object? lyrics = _notProvided,
   }) => SceneProject(
     name: name ?? this.name,
     canvas: canvas ?? this.canvas,
@@ -584,6 +591,7 @@ final class SceneProject {
     audioAnalysis: identical(audioAnalysis, _notProvided)
         ? this.audioAnalysis
         : audioAnalysis as String?,
+    lyrics: identical(lyrics, _notProvided) ? this.lyrics : lyrics as LyricsTrack?,
   );
 
   /// Serializes the project manifest.
@@ -600,11 +608,9 @@ final class SceneProject {
       'scheme': 'seed',
       'seed': '#7C4DFF',
     },
-    'lyrics': <String, Object?>{
-      'source': null,
-      'offsetMs': 0,
-      'lines': <Object?>[],
-    },
+    'lyrics': lyrics == null
+        ? <String, Object?>{'source': null, 'offsetMs': 0, 'lines': <Object?>[]}
+        : <String, Object?>{'source': 'lrc', ...lyrics!.toJson()},
     'assets': assets.map((asset) => asset.toJson()).toList(growable: false),
     'layers': layers.map((layer) => layer.toJson()).toList(growable: false),
     'postFx': <Object?>[],
@@ -642,11 +648,19 @@ final class SceneProject {
             ),
       audioPath: rawAudio is Map ? rawAudio['path'] as String? : null,
       audioAnalysis: rawAudio is Map ? rawAudio['analysis'] as String? : null,
+      lyrics: _readLyrics(json['lyrics']),
     );
   }
 }
 
 const Object _notProvided = Object();
+
+LyricsTrack? _readLyrics(Object? value) {
+  if (value is! Map || value['lines'] is! List) {
+    return null;
+  }
+  return LyricsTrack.fromJson(value.map((key, item) => MapEntry(key.toString(), item)));
+}
 
 JsonObject _requireMap(Object? value) {
   if (value is! Map) {
