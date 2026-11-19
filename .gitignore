@@ -1,5 +1,6 @@
 # Local SDKs and tooling
 .tooling/
+tool/ffmpeg/
 
 # Dart and Flutter
 .dart_tool/

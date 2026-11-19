@@ -54,9 +54,15 @@ final class FfmpegAudioDecoder implements AudioDecoder {
   }
 
   String _ffmpegPath() {
-    final bundled = File('tool/ffmpeg/ffmpeg.exe');
-    if (bundled.existsSync()) {
-      return bundled.path;
+    for (final relative in const <String>[
+      'tool/ffmpeg/ffmpeg.exe',
+      '../tool/ffmpeg/ffmpeg.exe',
+      '../../tool/ffmpeg/ffmpeg.exe',
+    ]) {
+      final file = File(relative);
+      if (file.existsSync()) {
+        return file.absolute.path;
+      }
     }
     return 'ffmpeg';
   }

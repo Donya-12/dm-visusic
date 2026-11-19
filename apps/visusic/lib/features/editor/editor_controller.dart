@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:visusic/platform/ffmpeg_audio_decoder.dart';
@@ -37,6 +38,9 @@ final class EditorController extends ChangeNotifier {
   final Set<String> _selectedIds = <String>{};
   final Map<String, ui.Image> _images = <String, ui.Image>{};
   AnalysisCache? _cache;
+  AudioPlayer? _player;
+  Uint8List? _audioBytes;
+  StreamSubscription<Duration>? _positionSubscription;
   Timer? _autosaveTimer;
   FeatureSnapshot _features = FeatureSnapshot.silent(30);
   String? _currentPath;
@@ -132,8 +136,12 @@ final class EditorController extends ChangeNotifier {
     });
   }
 
-  /// Toggles deterministic demo playback.
-  void togglePlayback() {
+  /// Toggles deterministic demo or real audio playback.
+  Future<void> togglePlayback() async {
+    if (_cache != null && _audioBytes != null) {
+      await _toggleAudioPlayback();
+      return;
+    }
     if (!_playing && _features.time >= project.canvas.duration) {
       seek(0);
     }
@@ -165,6 +173,7 @@ final class EditorController extends ChangeNotifier {
         .toDouble();
     _bindingResolver.reset();
     _features = _featuresAt(seconds);
+    _player?.seek(Duration(milliseconds: timeMs.round()));
     _refreshExpressions();
     notifyListeners();
   }
@@ -172,6 +181,7 @@ final class EditorController extends ChangeNotifier {
   /// Loads, decodes, and analyzes an audio file for feature playback.
   Future<void> loadAudio(StoredBinaryFile file) async {
     await _runBusy(() async {
+      _resetPlayer();
       final decoder = file.name.toLowerCase().endsWith('.wav')
           ? const WavDecoder() as AudioDecoder
           : const FfmpegAudioDecoder();
@@ -190,8 +200,12 @@ final class EditorController extends ChangeNotifier {
       _bundle = _bundle.copyWith(
         project: project.copyWith(
           canvas: project.canvas.copyWith(duration: result.duration),
+          audioPath: file.path,
+          audioAnalysis: 'analysis.vsan',
         ),
+        analysisBytes: _cache!.encode(),
       );
+      _audioBytes = file.bytes;
       _bindingResolver.reset();
       _features = _featuresAt(0);
       _refreshExpressions();
@@ -205,6 +219,42 @@ final class EditorController extends ChangeNotifier {
       return cache.frameAt(seconds);
     }
     return FeatureSnapshot.demo(seconds, project.canvas.duration);
+  }
+
+  Future<void> _toggleAudioPlayback() async {
+    var player = _player;
+    if (player == null) {
+      player = AudioPlayer();
+      _player = player;
+      _positionSubscription = player.onPositionChanged.listen(_onAudioPosition);
+      player.onPlayerComplete.listen((_) {
+        _playing = false;
+        unawaited(player?.pause());
+        seek(0);
+      });
+      await player.play(BytesSource(_audioBytes!), volume: 1);
+      _playing = true;
+    } else if (_playing) {
+      await player.pause();
+      _playing = false;
+    } else {
+      await player.resume();
+      _playing = true;
+    }
+    notifyListeners();
+  }
+
+  void _onAudioPosition(Duration position) {
+    if (!_playing) {
+      return;
+    }
+    final seconds = position.inMilliseconds / 1000;
+    if ((seconds - _features.time).abs() < 0.02) {
+      return;
+    }
+    _features = _featuresAt(seconds);
+    _refreshExpressions();
+    notifyListeners();
   }
 
   /// Opens an audio picker, then decodes and analyzes the selection.
@@ -663,6 +713,7 @@ final class EditorController extends ChangeNotifier {
   }
 
   void _load(ProjectBundle decoded, String? path) {
+    _resetPlayer();
     _bundle = decoded;
     _currentPath = path;
     _dirty = path == null;
@@ -672,8 +723,18 @@ final class EditorController extends ChangeNotifier {
     _nextAssetId = 1;
     _playing = false;
     _bindingResolver.reset();
+    final analysis = decoded.analysisBytes;
+    _cache = analysis == null ? null : AnalysisCache.decode(analysis);
     _features = FeatureSnapshot.silent(project.canvas.duration);
     unawaited(refreshImages());
+  }
+
+  void _resetPlayer() {
+    unawaited(_positionSubscription?.cancel());
+    _positionSubscription = null;
+    _player?.dispose();
+    _player = null;
+    _audioBytes = null;
   }
 
   void _applyHistoryResult(ProjectBundle result) {
@@ -758,6 +819,7 @@ final class EditorController extends ChangeNotifier {
   @override
   void dispose() {
     _autosaveTimer?.cancel();
+    _resetPlayer();
     super.dispose();
   }
 }

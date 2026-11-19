@@ -12,6 +12,7 @@ VisuSic itself is licensed under the MIT License. It includes or depends on the 
 | `archive` | BSD 3-Clause | Reading and writing the `.vsproj` ZIP container. |
 | `file_selector` | BSD 3-Clause | Native open/save dialogs on Windows and Android. |
 | `path_provider` | BSD 3-Clause | Application-support directory for crash recovery. |
+| `audioplayers` | MIT | Local audio playback on Windows and Android. |
 | Inter | SIL Open Font License 1.1 | Bundled variable font; copyright and license are in `apps/visusic/assets/fonts/OFL.txt`. |
 
 The application license page displays license texts collected from resolved Dart and Flutter packages. The Inter license is registered explicitly from the bundled asset.
@@ -22,4 +23,4 @@ The development workspace also uses `test` and `flutter_lints` (BSD 3-Clause). G
 
 ## Future components
 
-FFmpeg is not bundled at M0. When audio or video support is introduced, the selected FFmpeg build, its exact license configuration, source offer, and required LGPL notices must be reviewed and documented before distribution.
+FFmpeg is not bundled at M0. Audio decoding is available through an optional FFmpeg binary downloaded by `tool/fetch_ffmpeg.ps1` (LGPL build) into `tool/ffmpeg`, which Git ignores. When a release ships FFmpeg alongside the application, the exact build, license configuration, source offer, and required LGPL notices must be reviewed and documented before distribution.

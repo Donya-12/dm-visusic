@@ -530,6 +530,8 @@ final class SceneProject {
     required this.canvas,
     List<SceneLayer>? layers,
     List<ProjectAsset>? assets,
+    this.audioPath,
+    this.audioAnalysis,
   }) : layers = List<SceneLayer>.unmodifiable(layers ?? const <SceneLayer>[]),
        assets = List<ProjectAsset>.unmodifiable(
          assets ?? const <ProjectAsset>[],
@@ -547,6 +549,12 @@ final class SceneProject {
   /// Binary asset metadata.
   final List<ProjectAsset> assets;
 
+  /// Host path of the source audio track, when loaded.
+  final String? audioPath;
+
+  /// ZIP-relative analysis cache name, when persisted.
+  final String? audioAnalysis;
+
   /// Returns a layer by ID or null.
   SceneLayer? layerById(String id) {
     for (final layer in layers) {
@@ -563,11 +571,19 @@ final class SceneProject {
     SceneCanvas? canvas,
     List<SceneLayer>? layers,
     List<ProjectAsset>? assets,
+    Object? audioPath = _notProvided,
+    Object? audioAnalysis = _notProvided,
   }) => SceneProject(
     name: name ?? this.name,
     canvas: canvas ?? this.canvas,
     layers: layers ?? this.layers,
     assets: assets ?? this.assets,
+    audioPath: identical(audioPath, _notProvided)
+        ? this.audioPath
+        : audioPath as String?,
+    audioAnalysis: identical(audioAnalysis, _notProvided)
+        ? this.audioAnalysis
+        : audioAnalysis as String?,
   );
 
   /// Serializes the project manifest.
@@ -575,7 +591,10 @@ final class SceneProject {
     'schemaVersion': 1,
     'name': name,
     'canvas': canvas.toJson(),
-    'audio': <String, Object?>{'path': null, 'analysis': null},
+    'audio': <String, Object?>{
+      'path': audioPath,
+      'analysis': audioAnalysis,
+    },
     'theme': <String, Object?>{
       'mode': 'dark',
       'scheme': 'seed',
@@ -601,6 +620,7 @@ final class SceneProject {
     }
     final rawLayers = json['layers'];
     final rawAssets = json['assets'];
+    final rawAudio = json['audio'];
     return SceneProject(
       name: _readString(json, 'name', fallback: 'Untitled Scene'),
       canvas: SceneCanvas.fromJson(_requireMap(json['canvas'])),
@@ -620,6 +640,8 @@ final class SceneProject {
           : throw const ProjectFormatException(
               'Project assets must be an array.',
             ),
+      audioPath: rawAudio is Map ? rawAudio['path'] as String? : null,
+      audioAnalysis: rawAudio is Map ? rawAudio['analysis'] as String? : null,
     );
   }
 }

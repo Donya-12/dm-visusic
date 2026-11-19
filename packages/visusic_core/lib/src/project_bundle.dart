@@ -7,13 +7,18 @@ import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:visusic_core/src/scene_models.dart';
 
+const Object _notProvided = Object();
+
 /// A project manifest and its binary assets kept outside platform file APIs.
 final class ProjectBundle {
   /// Creates an immutable project bundle.
-  ProjectBundle({required this.project, Map<String, Uint8List>? assetBytes})
-    : assetBytes = Map<String, Uint8List>.unmodifiable(
-        assetBytes ?? const <String, Uint8List>{},
-      );
+  ProjectBundle({
+    required this.project,
+    Map<String, Uint8List>? assetBytes,
+    this.analysisBytes,
+  }) : assetBytes = Map<String, Uint8List>.unmodifiable(
+         assetBytes ?? const <String, Uint8List>{},
+       );
 
   /// Serializable project.
   final SceneProject project;
@@ -21,13 +26,20 @@ final class ProjectBundle {
   /// Binary asset contents keyed by asset ID.
   final Map<String, Uint8List> assetBytes;
 
+  /// Precomputed `analysis.vsan` cache for the source audio track.
+  final Uint8List? analysisBytes;
+
   /// Copies selected bundle values.
   ProjectBundle copyWith({
     SceneProject? project,
     Map<String, Uint8List>? assetBytes,
+    Object? analysisBytes = _notProvided,
   }) => ProjectBundle(
     project: project ?? this.project,
     assetBytes: assetBytes ?? this.assetBytes,
+    analysisBytes: identical(analysisBytes, _notProvided)
+        ? this.analysisBytes
+        : analysisBytes as Uint8List?,
   );
 
   /// Creates an empty 16:9 project.
@@ -60,6 +72,16 @@ abstract final class ProjectArchiveCodec {
       }
       archive.addFile(ArchiveFile(asset.path, bytes.length, bytes));
     }
+    final analysisName = bundle.project.audioAnalysis;
+    if (analysisName != null) {
+      final analysisBytes = bundle.analysisBytes;
+      if (analysisBytes == null) {
+        throw const ProjectFormatException('Missing analysis.vsan bytes.');
+      }
+      archive.addFile(
+        ArchiveFile(analysisName, analysisBytes.length, analysisBytes),
+      );
+    }
     final encoded = ZipEncoder().encode(archive);
     return Uint8List.fromList(encoded);
   }
@@ -89,7 +111,20 @@ abstract final class ProjectArchiveCodec {
         }
         assetBytes[asset.id] = Uint8List.fromList(_fileBytes(file));
       }
-      return ProjectBundle(project: project, assetBytes: assetBytes);
+      Uint8List? analysisBytes;
+      final analysisName = project.audioAnalysis;
+      if (analysisName != null) {
+        final file = archive.findFile(analysisName);
+        if (file == null) {
+          throw ProjectFormatException('Missing project file $analysisName.');
+        }
+        analysisBytes = Uint8List.fromList(_fileBytes(file));
+      }
+      return ProjectBundle(
+        project: project,
+        assetBytes: assetBytes,
+        analysisBytes: analysisBytes,
+      );
     } on ProjectFormatException {
       rethrow;
     } on Object catch (error) {

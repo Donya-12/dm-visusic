@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: Copyright (c) 2026 Donya
 
+import 'dart:typed_data';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:visusic/app/localization/generated/app_localizations.dart';
 import 'package:visusic/features/editor/editor_controller.dart';
@@ -71,6 +73,14 @@ final class TimelinePanel extends StatelessWidget {
             ),
           ),
           const Divider(height: 1),
+          if (controller.hasAudio)
+            SizedBox(
+              height: 36,
+              child: CustomPaint(
+                size: Size.infinite,
+                painter: _WaveformPainter(controller.waveformPeaks),
+              ),
+            ),
           Expanded(
             child: controller.project.layers.isEmpty
                 ? Center(
@@ -176,4 +186,35 @@ final class _TimingLane extends StatelessWidget {
 String _time(double seconds) {
   final whole = seconds < 0 ? 0 : seconds.floor();
   return '${whole ~/ 60}:${(whole % 60).toString().padLeft(2, '0')}';
+}
+
+final class _WaveformPainter extends CustomPainter {
+  _WaveformPainter(this.peaks);
+  final Float32List peaks;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (peaks.length < 2) {
+      return;
+    }
+    final pairs = peaks.length ~/ 2;
+    final center = size.height / 2;
+    final paint = Paint()
+      ..color = const Color(0xFFB69CFF)
+      ..strokeWidth = 1;
+    for (var index = 0; index < pairs; index++) {
+      final x = index / pairs * size.width;
+      final min = peaks[index * 2];
+      final max = peaks[index * 2 + 1];
+      canvas.drawLine(
+        Offset(x, center - max * center),
+        Offset(x, center - min * center),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_WaveformPainter oldDelegate) =>
+      oldDelegate.peaks != peaks;
 }

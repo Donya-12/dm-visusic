@@ -38,4 +38,21 @@ void main() {
       throwsA(isA<ProjectFormatException>()),
     );
   });
+
+  test('.vsproj round-trips the analysis cache entry', () {
+    final analysis = Uint8List.fromList(<int>[9, 8, 7, 6]);
+    final original = ProjectBundle(
+      project: SceneProject(
+        name: 'Audio scene',
+        canvas: const SceneCanvas(width: 640, height: 360, aspect: '16:9'),
+        audioPath: 'track.wav',
+        audioAnalysis: 'analysis.vsan',
+      ),
+      analysisBytes: analysis,
+    );
+    final restored = ProjectArchiveCodec.decode(ProjectArchiveCodec.encode(original));
+    expect(restored.project.audioPath, 'track.wav');
+    expect(restored.project.audioAnalysis, 'analysis.vsan');
+    expect(restored.analysisBytes, analysis);
+  });
 }
