@@ -36,6 +36,12 @@ abstract final class BuiltinWidgetIds {
   /// Text readability overlay.
   static const String scrim = 'builtin.scrim';
 
+  /// Word-synced karaoke lyrics.
+  static const String karaoke = 'builtin.karaoke';
+
+  /// Multi-line rolling lyrics.
+  static const String rollingLyrics = 'builtin.rollingLyrics';
+
   /// All identifiers available in the built-in library.
   static const List<String> all = <String>[
     rectangle,
@@ -48,6 +54,8 @@ abstract final class BuiltinWidgetIds {
     albumArt,
     progress,
     scrim,
+    karaoke,
+    rollingLyrics,
   ];
 }
 

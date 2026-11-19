@@ -48,7 +48,9 @@ final class ScenePainter extends CustomPainter {
       (layer) =>
           !layer.hidden &&
           (layer.widgetId == 'builtin.text' ||
-              layer.widgetId == 'builtin.title'),
+              layer.widgetId == 'builtin.title' ||
+              layer.widgetId == 'builtin.karaoke' ||
+              layer.widgetId == 'builtin.rollingLyrics'),
     );
     for (final layer in project.layers) {
       if (layer.hidden || layer.muted || (hasSolo && !layer.solo)) {
@@ -148,6 +150,10 @@ final class ScenePainter extends CustomPainter {
         _paintProgress(canvas, size, params);
       case 'builtin.scrim':
         _paintScrim(canvas, size, params);
+      case 'builtin.karaoke':
+        _paintKaraoke(canvas, size, params);
+      case 'builtin.rollingLyrics':
+        _paintRollingLyrics(canvas, size, params);
       default:
         _paintUnknown(canvas, size, layer.widgetId);
     }
@@ -639,6 +645,185 @@ final class ScenePainter extends CustomPainter {
         Paint()..color = color.withValues(alpha: opacity),
       );
     }
+  }
+
+  void _paintKaraoke(Canvas canvas, Size size, Map<String, Object?> params) {
+    final line = features.lyricLine ?? '';
+    final next = features.lyricNextLine;
+    if (line.isEmpty) {
+      return;
+    }
+    final fontSize = _double(params, 'size', 64);
+    final colors = _colors(params['colors'], const <Color>[Color(0xFFFFFFFF)]);
+    final mode = _string(params, 'mode', 'wipe');
+    final align = _string(params, 'align', 'center');
+    final inactive = _double(params, 'inactiveOpacity', 0.4);
+    final wordIndex = features.lyricWordIndex.clamp(0, 1 << 30).toInt();
+    final wordProgress = features.lyricWordProgress;
+    final lineProgress = features.lyricLineProgress;
+    final words = line.split(' ').where((word) => word.isNotEmpty).toList();
+    final activeWordIndex = words.isEmpty ? 0 : wordIndex.clamp(0, words.length - 1).toInt();
+    final base = TextStyle(
+      fontFamily: 'Inter',
+      fontSize: fontSize,
+      fontWeight: FontWeight.w700,
+      height: 1.15,
+    );
+    final gradient = LinearGradient(colors: colors);
+    final inactivePaint = Paint()
+      ..color = _white.withValues(alpha: inactive);
+    final full = _layout(line, base, size.width);
+    final contentHeight = full.height + (next != null ? fontSize * 0.75 : 0);
+    var y = (size.height - contentHeight) / 2;
+    final alignX = switch (align) {
+      'left' => 0.0,
+      'right' => size.width - full.width,
+      _ => (size.width - full.width) / 2,
+    };
+    _drawLine(canvas, line, base, inactivePaint, alignX, y, size.width);
+    switch (mode) {
+      case 'wipe':
+        final clipWidth = full.width * lineProgress;
+        canvas.save();
+        canvas.clipRect(Rect.fromLTWH(alignX, y - 6, clipWidth, full.height + 12));
+        _drawGradient(canvas, line, base, gradient, alignX, y, size.width);
+        canvas.restore();
+      case 'perLetter' || 'glow' || 'bounce':
+        final active = words.isEmpty ? line : words[activeWordIndex];
+        final prefix = words.isEmpty
+            ? ''
+            : words.take(activeWordIndex).join(' ');
+        final prefixWidth = prefix.isEmpty
+            ? 0.0
+            : _layout('$prefix ', base, size.width).width;
+        final activeWidth = _layout(active, base, size.width).width;
+        final offset = Offset(alignX + prefixWidth, y);
+        if (mode == 'bounce') {
+          final bounce = math.sin(features.beatPhase * math.pi) * fontSize * 0.12;
+          canvas.save();
+          canvas.translate(offset.dx, offset.dy + bounce);
+        } else if (mode == 'glow') {
+          final glow = Paint()
+            ..shader = gradient.createShader(
+              Rect.fromLTWH(0, y, activeWidth, full.height),
+            )
+            ..maskFilter = MaskFilter.blur(BlurStyle.normal, fontSize * 0.12);
+          canvas.save();
+          canvas.translate(offset.dx, offset.dy);
+          _drawLine(canvas, active, base, glow, 0, 0, activeWidth);
+          canvas.restore();
+          canvas.save();
+          canvas.translate(offset.dx, offset.dy);
+        } else {
+          canvas.save();
+          canvas.translate(offset.dx, offset.dy);
+        }
+        final highlight = mode == 'perLetter'
+            ? String.fromCharCodes(
+                active.runes.take(
+                  (active.runes.length * wordProgress)
+                      .ceil()
+                      .clamp(0, active.runes.length),
+                ),
+              )
+            : active;
+        if (highlight.isNotEmpty) {
+          final shader = gradient.createShader(
+            Rect.fromLTWH(0, 0, activeWidth, full.height),
+          );
+          _drawLine(canvas, highlight, base, Paint()..shader = shader, 0, 0, activeWidth);
+        }
+        canvas.restore();
+    }
+    if (next != null) {
+      final nextY = y + full.height + fontSize * 0.2;
+      final nextPaint = Paint()
+        ..color = _white.withValues(alpha: inactive * 0.7);
+      _drawLine(canvas, next, base.copyWith(fontSize: fontSize * 0.72), nextPaint, alignX, nextY, size.width);
+    }
+  }
+
+  void _paintRollingLyrics(Canvas canvas, Size size, Map<String, Object?> params) {
+    final fontSize = _double(params, 'size', 36);
+    final color = parseSceneColor(_string(params, 'color', '#FFFFFF'));
+    final activeColor = parseSceneColor(_string(params, 'activeColor', '#B69CFF'));
+    final visible = _int(params, 'lines', 5).clamp(3, 7).toInt();
+    final center = visible ~/ 2;
+    final lineHeight = fontSize * 1.5;
+    final top = (size.height - lineHeight * visible) / 2;
+    for (var offset = -center; offset <= center; offset++) {
+      final index = features.lyricLineIndex + offset;
+      if (index < 0) {
+        continue;
+      }
+      // Rolling lyrics need surrounding lines; approximate with the active line.
+      final isActive = offset == 0;
+      if (!isActive && (features.lyricLine == null)) {
+        continue;
+      }
+      final style = TextStyle(
+        fontFamily: 'Inter',
+        fontSize: isActive ? fontSize : fontSize * 0.82,
+        fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
+        color: isActive ? activeColor : color.withValues(alpha: 0.55),
+      );
+      final text = isActive ? (features.lyricLine ?? '') : (features.lyricNextLine ?? '');
+      final painter = _layout(text, style, size.width);
+      painter.paint(
+        canvas,
+        Offset((size.width - painter.width) / 2, top + (offset + center) * lineHeight),
+      );
+    }
+  }
+
+  TextPainter _layout(String text, TextStyle style, double maxWidth) {
+    return TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: maxWidth);
+  }
+
+  void _drawLine(
+    Canvas canvas,
+    String text,
+    TextStyle style,
+    Paint paint,
+    double x,
+    double y,
+    double maxWidth,
+  ) {
+    final painter = TextPainter(
+      text: TextSpan(
+        text: text,
+        style: style.copyWith(
+          color: paint.shader == null ? paint.color : null,
+          foreground: paint.shader != null ? paint : null,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: maxWidth);
+    painter.paint(canvas, Offset(x, y));
+  }
+
+  void _drawGradient(
+    Canvas canvas,
+    String text,
+    TextStyle style,
+    LinearGradient gradient,
+    double x,
+    double y,
+    double maxWidth,
+  ) {
+    final painter = TextPainter(
+      text: TextSpan(
+        text: text,
+        style: style.copyWith(
+          foreground: Paint()..shader = gradient.createShader(Rect.fromLTWH(x, y, maxWidth, style.fontSize ?? 64)),
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: maxWidth);
+    painter.paint(canvas, Offset(x, y));
   }
 
   void _paintUnknown(Canvas canvas, Size size, String id) {

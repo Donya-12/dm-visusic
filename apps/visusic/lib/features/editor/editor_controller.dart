@@ -38,6 +38,7 @@ final class EditorController extends ChangeNotifier {
   final Set<String> _selectedIds = <String>{};
   final Map<String, ui.Image> _images = <String, ui.Image>{};
   AnalysisCache? _cache;
+  LyricsTrack? _lyrics;
   AudioPlayer? _player;
   Uint8List? _audioBytes;
   StreamSubscription<Duration>? _positionSubscription;
@@ -72,6 +73,9 @@ final class EditorController extends ChangeNotifier {
 
   /// Whether a real analyzed audio cache is loaded.
   bool get hasAudio => _cache != null;
+
+  /// Whether synchronized lyrics are loaded.
+  bool get hasLyrics => _lyrics != null;
 
   /// Estimated tempo when audio is loaded, otherwise zero.
   double get bpm => _cache?.bpm ?? 0;
@@ -215,10 +219,39 @@ final class EditorController extends ChangeNotifier {
 
   FeatureSnapshot _featuresAt(double seconds) {
     final cache = _cache;
-    if (cache != null) {
-      return cache.frameAt(seconds);
+    final base = cache != null
+        ? cache.frameAt(seconds)
+        : FeatureSnapshot.demo(seconds, project.canvas.duration);
+    return _applyLyrics(base, seconds * 1000);
+  }
+
+  FeatureSnapshot _applyLyrics(FeatureSnapshot base, double timeMs) {
+    final lyrics = _lyrics;
+    if (lyrics == null || lyrics.lines.isEmpty) {
+      return base;
     }
-    return FeatureSnapshot.demo(seconds, project.canvas.duration);
+    final index = lyrics.lineIndexAt(timeMs);
+    final line = lyrics.lineAt(timeMs);
+    final next = index + 1 < lyrics.lines.length
+        ? lyrics.lines[index + 1].text
+        : null;
+    return base.copyWithLyrics(
+      lyricLineIndex: index,
+      lyricWordIndex: lyrics.wordIndexAt(timeMs),
+      lyricLineProgress: lyrics.lineProgressAt(timeMs),
+      lyricWordProgress: lyrics.wordProgressAt(timeMs),
+      lyricLine: line?.text,
+      lyricNextLine: next,
+      lyricTranslation: line?.translation,
+    );
+  }
+
+  /// Replaces the synchronized lyrics and refreshes renderer values.
+  void setLyrics(LyricsTrack lyrics) {
+    _lyrics = lyrics;
+    _features = _applyLyrics(_features, _features.time * 1000);
+    _refreshExpressions();
+    notifyListeners();
   }
 
   Future<void> _toggleAudioPlayback() async {
@@ -715,6 +748,7 @@ final class EditorController extends ChangeNotifier {
   void _load(ProjectBundle decoded, String? path) {
     _resetPlayer();
     _bundle = decoded;
+    _lyrics = null;
     _currentPath = path;
     _dirty = path == null;
     _history.clear();
@@ -763,8 +797,20 @@ final class EditorController extends ChangeNotifier {
   }
 
   void _refreshExpressions() {
-    expressionValues = _bindingResolver.resolve(project, registry, _features);
+    expressionValues = _bindingResolver.resolve(
+      project,
+      registry,
+      _features,
+      lyric: _lyricValues(),
+    );
   }
+
+  Map<String, double> _lyricValues() => <String, double>{
+    'lineProgress': _features.lyricLineProgress,
+    'wordProgress': _features.lyricWordProgress,
+    'lineIndex': _features.lyricLineIndex.toDouble(),
+    'wordIndex': _features.lyricWordIndex.toDouble(),
+  };
 
   SceneLayer _duplicateLayer(SceneLayer source) {
     return source

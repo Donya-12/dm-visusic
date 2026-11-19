@@ -20,6 +20,13 @@ final class FeatureSnapshot {
     required this.spectrum,
     required this.waveform,
     Map<String, double>? bands,
+    this.lyricLineIndex = 0,
+    this.lyricWordIndex = 0,
+    this.lyricLineProgress = 0,
+    this.lyricWordProgress = 0,
+    this.lyricLine,
+    this.lyricNextLine,
+    this.lyricTranslation,
   }) : bands = Map.unmodifiable(bands ?? const <String, double>{});
 
   /// Position in seconds.
@@ -57,6 +64,27 @@ final class FeatureSnapshot {
 
   /// Named frequency bands.
   final Map<String, double> bands;
+
+  /// Index of the active lyric line.
+  final int lyricLineIndex;
+
+  /// Index of the active word inside the line.
+  final int lyricWordIndex;
+
+  /// Progress through the active line in 0..1.
+  final double lyricLineProgress;
+
+  /// Progress through the active word in 0..1.
+  final double lyricWordProgress;
+
+  /// Active lyric line text.
+  final String? lyricLine;
+
+  /// Next lyric line text, when available.
+  final String? lyricNextLine;
+
+  /// Optional active translation line.
+  final String? lyricTranslation;
 
   /// Whether this frame contains a beat attack.
   bool get isBeat => beatPhase < 0.045;
@@ -120,6 +148,39 @@ final class FeatureSnapshot {
     );
   }
 
+  /// Copies this frame with lyric state attached for renderers.
+  FeatureSnapshot copyWithLyrics({
+    int? lyricLineIndex,
+    int? lyricWordIndex,
+    double? lyricLineProgress,
+    double? lyricWordProgress,
+    String? lyricLine,
+    String? lyricNextLine,
+    String? lyricTranslation,
+  }) {
+    return FeatureSnapshot(
+      time: time,
+      duration: duration,
+      rms: rms,
+      peak: peak,
+      energyShort: energyShort,
+      energyLong: energyLong,
+      bpm: bpm,
+      beatPhase: beatPhase,
+      beatIndex: beatIndex,
+      spectrum: spectrum,
+      waveform: waveform,
+      bands: bands,
+      lyricLineIndex: lyricLineIndex ?? this.lyricLineIndex,
+      lyricWordIndex: lyricWordIndex ?? this.lyricWordIndex,
+      lyricLineProgress: lyricLineProgress ?? this.lyricLineProgress,
+      lyricWordProgress: lyricWordProgress ?? this.lyricWordProgress,
+      lyricLine: lyricLine ?? this.lyricLine,
+      lyricNextLine: lyricNextLine ?? this.lyricNextLine,
+      lyricTranslation: lyricTranslation ?? this.lyricTranslation,
+    );
+  }
+
   /// Resolves a feature path to a number for bindings and expressions.
   double valueAt(String path) {
     return switch (path) {
@@ -134,6 +195,10 @@ final class FeatureSnapshot {
       'beat.index' => beatIndex.toDouble(),
       'time.now' => time,
       'time.progress' => progress,
+      'lyric.lineProgress' => lyricLineProgress,
+      'lyric.wordProgress' => lyricWordProgress,
+      'lyric.lineIndex' => lyricLineIndex.toDouble(),
+      'lyric.wordIndex' => lyricWordIndex.toDouble(),
       _ when path.startsWith('band.') => bands[path.substring(5)] ?? 0,
       _ => 0,
     };

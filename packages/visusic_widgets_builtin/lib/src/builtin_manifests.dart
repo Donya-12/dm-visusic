@@ -153,6 +153,36 @@ const String builtinManifestsJson = r'''
       {"id":"color","type":"color","label":{"en":"Color","ru":"Цвет"},"default":"#000000"}
     ],
     "bindings":[],"expressions":{},"render":{"type":"native","id":"scrim"}
+  },
+  {
+    "schemaVersion":1,"id":"builtin.karaoke","version":"1.0.0",
+    "name":{"en":"Karaoke Lyrics","ru":"Караоке-текст"},"author":"VisuSic","category":"text",
+    "tags":["lyrics","karaoke","sync","new"],"requires":{"audio":false,"lyrics":true},
+    "anchor":{"default":"bottom-center","resizable":true,"aspectLock":false,"width":1400,"height":260},
+    "params":[
+      {"id":"size","type":"float","label":{"en":"Size","ru":"Размер"},"min":24,"max":160,"default":64,"unit":"px","primary":true},
+      {"id":"colors","type":"gradient","label":{"en":"Colors","ru":"Цвета"},"default":["#FFFFFF","#B69CFF"],"primary":true},
+      {"id":"mode","type":"enum","label":{"en":"Highlight","ru":"Подсветка"},"options":["wipe","bounce","perLetter","glow"],"default":"wipe","primary":true},
+      {"id":"align","type":"enum","label":{"en":"Alignment","ru":"Выравнивание"},"options":["left","center","right"],"default":"center"},
+      {"id":"nextLines","type":"int","label":{"en":"Next lines","ru":"Следующие строки"},"min":0,"max":3,"default":1},
+      {"id":"inactiveOpacity","type":"float","label":{"en":"Inactive opacity","ru":"Прозрачность неактивных"},"min":0,"max":1,"default":0.4},
+      {"id":"pulse","type":"float","label":{"en":"Beat pulse","ru":"Пульс на битах"},"min":0,"max":0.4,"default":0.08}
+    ],
+    "bindings":[{"id":"kick","feature":"beat.isBeat","release":180,"curve":"expo"}],
+    "expressions":{"scale":"1 + bind.kick * params.pulse"},"render":{"type":"native","id":"karaoke"}
+  },
+  {
+    "schemaVersion":1,"id":"builtin.rollingLyrics","version":"1.0.0",
+    "name":{"en":"Rolling Lyrics","ru":"Бегущий текст"},"author":"VisuSic","category":"text",
+    "tags":["lyrics","rolling","new"],"requires":{"audio":false,"lyrics":true},
+    "anchor":{"default":"center","resizable":true,"aspectLock":false,"width":900,"height":320},
+    "params":[
+      {"id":"size","type":"float","label":{"en":"Size","ru":"Размер"},"min":18,"max":96,"default":36,"unit":"px","primary":true},
+      {"id":"color","type":"color","label":{"en":"Color","ru":"Цвет"},"default":"#FFFFFF","primary":true},
+      {"id":"activeColor","type":"color","label":{"en":"Active color","ru":"Цвет активной"},"default":"#B69CFF","primary":true},
+      {"id":"lines","type":"int","label":{"en":"Visible lines","ru":"Видимых строк"},"min":3,"max":7,"default":5}
+    ],
+    "bindings":[],"expressions":{},"render":{"type":"native","id":"rollingLyrics"}
   }
 ]}
 ''';
