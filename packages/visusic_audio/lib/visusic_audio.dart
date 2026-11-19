@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 // SPDX-FileCopyrightText: Copyright (c) 2026 Donya
 
+export 'src/analysis.dart';
+export 'src/analysis_cache.dart';
+export 'src/msgpack.dart';
+
 /// Shared defaults for deterministic offline audio analysis.
 abstract final class AudioAnalysisDefaults {
   /// PCM sample rate used by the analysis pipeline.
