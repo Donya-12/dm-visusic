@@ -19,6 +19,11 @@ void main() {
     expect(track.lines.last.text, 'Repeated line');
   });
 
+  test('treats LRC fractions as centiseconds', () {
+    final track = LrcParser.parse('[00:01.50]One and a half seconds');
+    expect(track.lines.single.timeMs, 1500);
+  });
+
   test('parses enhanced-LRC word timing tags', () {
     final track = LrcParser.parse(
       '[00:00.00]<00:00.00>Hello <00:00.50>world <00:01.00>again',

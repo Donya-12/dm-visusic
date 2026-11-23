@@ -275,7 +275,7 @@ abstract final class LrcParser {
           final tag = matches[index];
           final minutes = int.parse(tag.group(1)!);
           final seconds = int.parse(tag.group(2)!);
-          final fraction = int.parse(tag.group(3) ?? '0');
+          final fraction = _fractionMs(tag.group(3));
           final wordTime = minutes * 60000 + seconds * 1000 + fraction;
           final start = tag.end;
           final end = index + 1 < matches.length
@@ -291,7 +291,7 @@ abstract final class LrcParser {
       for (final match in timestamps) {
         final minutes = int.parse(match.group(1)!);
         final seconds = int.parse(match.group(2)!);
-        final fraction = int.parse(match.group(3) ?? '0');
+        final fraction = _fractionMs(match.group(3));
         final timeMs = minutes * 60000 + seconds * 1000 + fraction + offsetMs;
         lines.add(
           LyricLine(
@@ -314,5 +314,18 @@ abstract final class LrcParser {
       title: title,
       artist: artist,
     );
+  }
+
+  /// Converts an LRC fraction (centiseconds) to milliseconds.
+  static int _fractionMs(String? fraction) {
+    if (fraction == null || fraction.isEmpty) {
+      return 0;
+    }
+    final value = int.parse(fraction);
+    return switch (fraction.length) {
+      1 => value * 100,
+      2 => value * 10,
+      _ => value,
+    };
   }
 }
