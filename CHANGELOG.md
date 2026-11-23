@@ -17,3 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Scene editor with aspect ratios, layers, selection, transforms, snapping, inspector, undo/redo, and `.vsproj` save/open.
 - Widget manifest validator, safe numeric expressions, frame-based bindings, and the built-in widget library.
 - Deterministic scene painter shared by the editor, library previews, and future export.
+- Offline audio analysis, `.vsan` MessagePack cache, WAV/FFmpeg decoding, and playback.
+- LRC parser, LRCLIB client, karaoke/rolling lyrics widgets, and tap-to-sync.
+- Deterministic video export with FFmpeg (MP4/WebM), resolution/frame-rate presets, progress, and cancel.

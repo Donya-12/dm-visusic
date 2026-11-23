@@ -327,6 +327,21 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tapToSync => 'Тапни, чтобы синхронизировать строку';
 
   @override
+  String get export => 'Экспорт видео';
+
+  @override
+  String get exportFormat => 'Формат';
+
+  @override
+  String get exportResolution => 'Разрешение';
+
+  @override
+  String get exportFps => 'Кадров в секунду';
+
+  @override
+  String get exporting => 'Экспорт…';
+
+  @override
   String get save => 'Сохранить';
 
   @override

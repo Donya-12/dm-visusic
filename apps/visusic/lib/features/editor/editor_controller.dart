@@ -78,6 +78,12 @@ final class EditorController extends ChangeNotifier {
   /// Whether synchronized lyrics are loaded.
   bool get hasLyrics => _lyrics != null;
 
+  /// Precomputed analysis cache for export, when loaded.
+  AnalysisCache? get analysisCache => _cache;
+
+  /// Synchronized lyrics for export, when loaded.
+  LyricsTrack? get lyricsTrack => _lyrics;
+
   /// Estimated tempo when audio is loaded, otherwise zero.
   double get bpm => _cache?.bpm ?? 0;
 

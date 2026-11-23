@@ -708,6 +708,36 @@ abstract class AppLocalizations {
   /// **'Tap to sync the next line'**
   String get tapToSync;
 
+  /// No description provided for @export.
+  ///
+  /// In en, this message translates to:
+  /// **'Export video'**
+  String get export;
+
+  /// No description provided for @exportFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Format'**
+  String get exportFormat;
+
+  /// No description provided for @exportResolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution'**
+  String get exportResolution;
+
+  /// No description provided for @exportFps.
+  ///
+  /// In en, this message translates to:
+  /// **'Frame rate'**
+  String get exportFps;
+
+  /// No description provided for @exporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting…'**
+  String get exporting;
+
   /// No description provided for @save.
   ///
   /// In en, this message translates to:

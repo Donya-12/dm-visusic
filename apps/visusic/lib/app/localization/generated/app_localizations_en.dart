@@ -328,6 +328,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tapToSync => 'Tap to sync the next line';
 
   @override
+  String get export => 'Export video';
+
+  @override
+  String get exportFormat => 'Format';
+
+  @override
+  String get exportResolution => 'Resolution';
+
+  @override
+  String get exportFps => 'Frame rate';
+
+  @override
+  String get exporting => 'Exporting…';
+
+  @override
   String get save => 'Save';
 
   @override

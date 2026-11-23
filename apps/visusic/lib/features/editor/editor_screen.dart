@@ -14,6 +14,7 @@ import 'package:visusic/features/editor/editor_left_panel.dart';
 import 'package:visusic/features/editor/inspector_panel.dart';
 import 'package:visusic/features/editor/timeline_panel.dart';
 import 'package:visusic/features/editor/widget_library.dart';
+import 'package:visusic/features/export/export_dialog.dart';
 import 'package:visusic/features/lyrics/lyrics_dialog.dart';
 import 'package:visusic/platform/file_project_storage.dart';
 import 'package:visusic_core/visusic_core.dart';
@@ -205,6 +206,15 @@ class _EditorScreenState extends State<EditorScreen>
                         builder: (_) => LyricsDialog(controller: _controller),
                       ),
                       icon: const Icon(Icons.lyrics_outlined),
+                    ),
+                    IconButton(
+                      key: const Key('export-button'),
+                      tooltip: l10n.export,
+                      onPressed: () => showDialog<void>(
+                        context: context,
+                        builder: (_) => ExportDialog(controller: _controller),
+                      ),
+                      icon: const Icon(Icons.movie_outlined),
                     ),
                     IconButton(
                       key: const Key('open-button'),
