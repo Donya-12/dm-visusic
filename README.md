@@ -88,7 +88,7 @@ The widget manifest and pack formats are specified in [section 6 of the specific
 - **M4:** lyrics and karaoke.
 - **M5:** deterministic video export. ✅
 - **M6:** community template packs and shaders. ✅
-- **M7:** polish, accessibility, presentation mode, Android preparation.
+- **M7:** polish, post-FX, accessibility, presentation mode (Android preparation deferred). ✅
 
 ## Contributing and license
 

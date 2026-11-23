@@ -352,6 +352,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportPack => 'Export as .vspack';
 
   @override
+  String get effects => 'Effects';
+
+  @override
+  String get effectBloom => 'Bloom';
+
+  @override
+  String get effectVignette => 'Vignette';
+
+  @override
+  String get effectGrain => 'Film grain';
+
+  @override
+  String get effectShake => 'Camera shake';
+
+  @override
+  String get present => 'Present';
+
+  @override
   String get save => 'Save';
 
   @override

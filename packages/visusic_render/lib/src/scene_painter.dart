@@ -37,14 +37,22 @@ final class ScenePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final scaleX = size.width / project.canvas.width;
     final scaleY = size.height / project.canvas.height;
+    final logicalSize = Size(
+      project.canvas.width.toDouble(),
+      project.canvas.height.toDouble(),
+    );
     canvas.save();
     canvas.scale(scaleX, scaleY);
+    final shake = _effect('shake') * 20;
+    if (shake > 0) {
+      final phase = features.beatPhase * math.pi * 2;
+      canvas.translate(
+        math.sin(phase * 3) * shake,
+        math.cos(phase * 5) * shake,
+      );
+    }
     canvas.drawRect(
-      Offset.zero &
-          Size(
-            project.canvas.width.toDouble(),
-            project.canvas.height.toDouble(),
-          ),
+      Offset.zero & logicalSize,
       Paint()..color = parseSceneColor(project.canvas.background),
     );
     final hasSolo = project.layers.any((layer) => layer.solo);
@@ -70,7 +78,57 @@ final class ScenePainter extends CustomPainter {
       }
       _paintLayer(canvas, layer, timeMs);
     }
+    _paintPostFx(canvas, logicalSize);
     canvas.restore();
+  }
+
+  void _paintPostFx(Canvas canvas, Size size) {
+    final vignette = _effect('vignette');
+    if (vignette > 0) {
+      final paint = Paint()
+        ..shader = ui.Gradient.radial(
+          size.center(Offset.zero),
+          size.longestSide * 0.75,
+          <Color>[
+            const Color(0x00000000),
+            _black.withValues(alpha: vignette * 0.85),
+          ],
+        );
+      canvas.drawRect(Offset.zero & size, paint);
+    }
+    final grain = _effect('grain');
+    if (grain > 0) {
+      final paint = Paint()
+        ..color = _white.withValues(alpha: grain * 0.12);
+      for (var index = 0; index < 900; index++) {
+        final x = _noise(index) * size.width;
+        final y = _noise(index * 3 + 7) * size.height;
+        canvas.drawRect(Rect.fromLTWH(x, y, 1, 1), paint);
+      }
+    }
+    final bloom = _effect('bloom');
+    if (bloom > 0) {
+      final energy = features.energyShort.clamp(0, 1).toDouble();
+      final paint = Paint()
+        ..shader = ui.Gradient.radial(
+          size.center(Offset.zero),
+          size.shortestSide * 0.5,
+          <Color>[
+            _white.withValues(alpha: (0.08 + energy * 0.25) * bloom),
+            const Color(0x00000000),
+          ],
+        );
+      canvas.drawRect(Offset.zero & size, paint);
+    }
+  }
+
+  double _effect(String id) {
+    for (final effect in project.postFx) {
+      if (effect.id == id) {
+        return effect.intensity;
+      }
+    }
+    return 0;
   }
 
   void _paintLayer(Canvas canvas, SceneLayer layer, double timeMs) {

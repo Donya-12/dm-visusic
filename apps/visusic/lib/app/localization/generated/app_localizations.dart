@@ -756,6 +756,42 @@ abstract class AppLocalizations {
   /// **'Export as .vspack'**
   String get exportPack;
 
+  /// No description provided for @effects.
+  ///
+  /// In en, this message translates to:
+  /// **'Effects'**
+  String get effects;
+
+  /// No description provided for @effectBloom.
+  ///
+  /// In en, this message translates to:
+  /// **'Bloom'**
+  String get effectBloom;
+
+  /// No description provided for @effectVignette.
+  ///
+  /// In en, this message translates to:
+  /// **'Vignette'**
+  String get effectVignette;
+
+  /// No description provided for @effectGrain.
+  ///
+  /// In en, this message translates to:
+  /// **'Film grain'**
+  String get effectGrain;
+
+  /// No description provided for @effectShake.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera shake'**
+  String get effectShake;
+
+  /// No description provided for @present.
+  ///
+  /// In en, this message translates to:
+  /// **'Present'**
+  String get present;
+
   /// No description provided for @save.
   ///
   /// In en, this message translates to:

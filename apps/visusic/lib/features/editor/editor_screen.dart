@@ -11,7 +11,9 @@ import 'package:visusic/features/editor/aspect_presets.dart';
 import 'package:visusic/features/editor/editor_canvas.dart';
 import 'package:visusic/features/editor/editor_controller.dart';
 import 'package:visusic/features/editor/editor_left_panel.dart';
+import 'package:visusic/features/editor/effects_dialog.dart';
 import 'package:visusic/features/editor/inspector_panel.dart';
+import 'package:visusic/features/editor/presentation_screen.dart';
 import 'package:visusic/features/editor/timeline_panel.dart';
 import 'package:visusic/features/editor/widget_library.dart';
 import 'package:visusic/features/export/export_dialog.dart';
@@ -225,6 +227,26 @@ class _EditorScreenState extends State<EditorScreen>
                         builder: (_) => TemplatesDialog(controller: _controller),
                       ),
                       icon: const Icon(Icons.dashboard_outlined),
+                    ),
+                    IconButton(
+                      key: const Key('effects-button'),
+                      tooltip: l10n.effects,
+                      onPressed: () => showDialog<void>(
+                        context: context,
+                        builder: (_) => EffectsDialog(controller: _controller),
+                      ),
+                      icon: const Icon(Icons.auto_fix_high_outlined),
+                    ),
+                    IconButton(
+                      key: const Key('present-button'),
+                      tooltip: l10n.present,
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          fullscreenDialog: true,
+                          builder: (_) => PresentationScreen(controller: _controller),
+                        ),
+                      ),
+                      icon: const Icon(Icons.fullscreen_rounded),
                     ),
                     IconButton(
                       key: const Key('open-button'),

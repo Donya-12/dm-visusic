@@ -352,9 +352,17 @@ final class EditorController extends ChangeNotifier {
     );
   }
 
+  /// Sets a scene-wide post-processing effect intensity.
+  void setPostFx(String id, double intensity) {
+    final before = project;
+    final effects = <PostEffect>[...project.postFx]
+      ..removeWhere((effect) => effect.id == id);
+    effects.add(PostEffect(id: id, intensity: intensity.clamp(0, 1).toDouble()));
+    _execute(_ApplySceneCommand(before, project.copyWith(postFx: effects)));
+  }
+
   /// Replaces all layers with a ready-to-apply scene preset.
-  void applyScene(SceneProject preset) {
-    final layers = preset.layers
+  void applyScene(SceneProject preset) {    final layers = preset.layers
         .map((layer) => layer._withId(_newLayerId()))
         .toList(growable: false);
     final before = project;

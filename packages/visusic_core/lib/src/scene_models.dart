@@ -4,6 +4,7 @@
 import 'dart:collection';
 
 import 'package:visusic_core/src/lyrics.dart';
+import 'package:visusic_core/src/post_fx.dart';
 
 /// A read-only JSON object used by project serializers.
 typedef JsonObject = Map<String, Object?>;
@@ -535,9 +536,13 @@ final class SceneProject {
     this.audioPath,
     this.audioAnalysis,
     this.lyrics,
+    List<PostEffect>? postFx,
   }) : layers = List<SceneLayer>.unmodifiable(layers ?? const <SceneLayer>[]),
        assets = List<ProjectAsset>.unmodifiable(
          assets ?? const <ProjectAsset>[],
+       ),
+       postFx = List<PostEffect>.unmodifiable(
+         postFx ?? const <PostEffect>[],
        );
 
   /// User-visible project name.
@@ -561,6 +566,9 @@ final class SceneProject {
   /// Synchronized lyrics, when loaded.
   final LyricsTrack? lyrics;
 
+  /// Scene-wide post-processing effects.
+  final List<PostEffect> postFx;
+
   /// Returns a layer by ID or null.
   SceneLayer? layerById(String id) {
     for (final layer in layers) {
@@ -580,6 +588,7 @@ final class SceneProject {
     Object? audioPath = _notProvided,
     Object? audioAnalysis = _notProvided,
     Object? lyrics = _notProvided,
+    List<PostEffect>? postFx,
   }) => SceneProject(
     name: name ?? this.name,
     canvas: canvas ?? this.canvas,
@@ -594,6 +603,7 @@ final class SceneProject {
     lyrics: identical(lyrics, _notProvided)
         ? this.lyrics
         : lyrics as LyricsTrack?,
+    postFx: postFx ?? this.postFx,
   );
 
   /// Serializes the project manifest.
@@ -612,7 +622,7 @@ final class SceneProject {
         : <String, Object?>{'source': 'lrc', ...lyrics!.toJson()},
     'assets': assets.map((asset) => asset.toJson()).toList(growable: false),
     'layers': layers.map((layer) => layer.toJson()).toList(growable: false),
-    'postFx': <Object?>[],
+    'postFx': postFx.map((effect) => effect.toJson()).toList(growable: false),
   };
 
   /// Parses and migrates a project manifest.
@@ -648,6 +658,12 @@ final class SceneProject {
       audioPath: rawAudio is Map ? rawAudio['path'] as String? : null,
       audioAnalysis: rawAudio is Map ? rawAudio['analysis'] as String? : null,
       lyrics: _readLyrics(json['lyrics']),
+      postFx: json['postFx'] is List
+          ? (json['postFx'] as List)
+                .whereType<Map<Object?, Object?>>()
+                .map((effect) => PostEffect.fromJson(effect.cast<String, Object?>()))
+                .toList(growable: false)
+          : const <PostEffect>[],
     );
   }
 }

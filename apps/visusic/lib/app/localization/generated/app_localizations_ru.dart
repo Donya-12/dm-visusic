@@ -351,6 +351,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get exportPack => 'Экспорт в .vspack';
 
   @override
+  String get effects => 'Эффекты';
+
+  @override
+  String get effectBloom => 'Свечение';
+
+  @override
+  String get effectVignette => 'Виньетка';
+
+  @override
+  String get effectGrain => 'Зерно плёнки';
+
+  @override
+  String get effectShake => 'Дрожание камеры';
+
+  @override
+  String get present => 'Показ';
+
+  @override
   String get save => 'Сохранить';
 
   @override
