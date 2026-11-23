@@ -18,6 +18,7 @@ final class SceneExportService {
     this.cache,
     this.lyrics,
     this.images = const <String, ui.Image>{},
+    this.shaderPrograms = const <String, ui.FragmentProgram>{},
   });
 
   /// Project to render.
@@ -34,6 +35,9 @@ final class SceneExportService {
 
   /// Decoded image assets.
   final Map<String, ui.Image> images;
+
+  /// Preloaded shader programs.
+  final Map<String, ui.FragmentProgram> shaderPrograms;
 
   /// Exports the whole scene into [outputPath] using [encoder].
   Future<void> export({
@@ -79,6 +83,7 @@ final class SceneExportService {
         features: features,
         images: images,
         expressionValues: expressions,
+        shaderPrograms: shaderPrograms,
         width: settings.width,
         height: settings.height,
       );
@@ -133,6 +138,8 @@ Future<Uint8List> renderFrameRgba({
   required FeatureSnapshot features,
   required Map<String, ui.Image> images,
   required Map<String, Map<String, double>> expressionValues,
+  Map<String, ui.FragmentProgram> shaderPrograms =
+      const <String, ui.FragmentProgram>{},
   required int width,
   required int height,
 }) async {
@@ -143,6 +150,7 @@ Future<Uint8List> renderFrameRgba({
     features: features,
     images: images,
     expressionValues: expressionValues,
+    shaderPrograms: shaderPrograms,
   ).paint(canvas, ui.Size(width.toDouble(), height.toDouble()));
   final image = await recorder.endRecording().toImage(width, height);
   final data = await image.toByteData(format: ui.ImageByteFormat.rawRgba);

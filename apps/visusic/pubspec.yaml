@@ -35,6 +35,8 @@ flutter:
   generate: true
   assets:
     - assets/fonts/OFL.txt
+  shaders:
+    - assets/shaders/pulse.frag
   fonts:
     - family: Inter
       fonts:

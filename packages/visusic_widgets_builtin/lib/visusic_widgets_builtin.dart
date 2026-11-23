@@ -42,6 +42,9 @@ abstract final class BuiltinWidgetIds {
   /// Multi-line rolling lyrics.
   static const String rollingLyrics = 'builtin.rollingLyrics';
 
+  /// Prebuilt GLSL shader playground.
+  static const String shaderPulse = 'builtin.shaderPulse';
+
   /// All identifiers available in the built-in library.
   static const List<String> all = <String>[
     rectangle,
@@ -56,6 +59,7 @@ abstract final class BuiltinWidgetIds {
     scrim,
     karaoke,
     rollingLyrics,
+    shaderPulse,
   ];
 }
 

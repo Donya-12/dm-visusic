@@ -158,6 +158,7 @@ class _ExportDialogState extends State<ExportDialog> {
         cache: widget.controller.analysisCache,
         lyrics: widget.controller.lyricsTrack,
         images: widget.controller.images,
+        shaderPrograms: widget.controller.shaderPrograms,
       );
       await service.export(
         settings: ExportSettings(

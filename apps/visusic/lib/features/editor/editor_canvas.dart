@@ -243,6 +243,7 @@ class _EditorCanvasState extends State<EditorCanvas> {
                   features: controller.features,
                   images: controller.images,
                   expressionValues: controller.expressionValues,
+                  shaderPrograms: controller.shaderPrograms,
                 ),
               ),
               Positioned.fill(

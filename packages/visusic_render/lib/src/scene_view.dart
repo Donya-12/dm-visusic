@@ -15,6 +15,7 @@ final class SceneView extends StatelessWidget {
     required this.features,
     this.images = const <String, ui.Image>{},
     this.expressionValues = const <String, Map<String, double>>{},
+    this.shaderPrograms = const <String, ui.FragmentProgram>{},
     this.child,
     super.key,
   });
@@ -31,6 +32,9 @@ final class SceneView extends StatelessWidget {
   /// Evaluated expressions.
   final Map<String, Map<String, double>> expressionValues;
 
+  /// Preloaded shader programs.
+  final Map<String, ui.FragmentProgram> shaderPrograms;
+
   /// Optional editor overlay.
   final Widget? child;
 
@@ -45,6 +49,7 @@ final class SceneView extends StatelessWidget {
               features: features,
               images: images,
               expressionValues: expressionValues,
+              shaderPrograms: shaderPrograms,
             ),
           ),
         ),

@@ -15,6 +15,7 @@ final class ScenePainter extends CustomPainter {
     required this.features,
     this.images = const <String, ui.Image>{},
     this.expressionValues = const <String, Map<String, double>>{},
+    this.shaderPrograms = const <String, ui.FragmentProgram>{},
   });
 
   /// Scene document to draw.
@@ -28,6 +29,9 @@ final class ScenePainter extends CustomPainter {
 
   /// Evaluated manifest expressions keyed by layer ID.
   final Map<String, Map<String, double>> expressionValues;
+
+  /// Preloaded GLSL fragment programs keyed by widget ID.
+  final Map<String, ui.FragmentProgram> shaderPrograms;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -155,8 +159,26 @@ final class ScenePainter extends CustomPainter {
       case 'builtin.rollingLyrics':
         _paintRollingLyrics(canvas, size, params);
       default:
-        _paintUnknown(canvas, size, layer.widgetId);
+        final program = shaderPrograms[layer.widgetId];
+        if (program != null) {
+          _paintShader(canvas, size, params, program);
+        } else {
+          _paintUnknown(canvas, size, layer.widgetId);
+        }
     }
+  }
+
+  void _paintShader(
+    Canvas canvas,
+    Size size,
+    Map<String, Object?> params,
+    ui.FragmentProgram program,
+  ) {
+    final shader = program.fragmentShader();
+    shader.setFloat(0, features.time.toDouble());
+    shader.setFloat(1, _double(params, 'intensity', 0.6));
+    shader.setFloat(2, _double(params, 'speed', 2));
+    canvas.drawRect(Offset.zero & size, Paint()..shader = shader);
   }
 
   void _paintRectangle(Canvas canvas, Size size, Map<String, Object?> params) {
@@ -851,6 +873,7 @@ final class ScenePainter extends CustomPainter {
         oldDelegate.features.time != features.time ||
         oldDelegate.features.duration != features.duration ||
         oldDelegate.images != images ||
+        oldDelegate.shaderPrograms != shaderPrograms ||
         oldDelegate.expressionValues != expressionValues;
   }
 }

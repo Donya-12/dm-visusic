@@ -155,6 +155,18 @@ const String builtinManifestsJson = r'''
     "bindings":[],"expressions":{},"render":{"type":"native","id":"scrim"}
   },
   {
+    "schemaVersion":1,"id":"builtin.shaderPulse","version":"1.0.0",
+    "name":{"en":"Shader Pulse","ru":"Шейдер-пульс"},"author":"VisuSic","category":"background",
+    "tags":["shader","glsl","new"],"requires":{"audio":true,"lyrics":false},
+    "anchor":{"default":"fill","resizable":true,"aspectLock":false,"width":1920,"height":1080},
+    "params":[
+      {"id":"intensity","type":"float","label":{"en":"Intensity","ru":"Интенсивность"},"min":0,"max":1.5,"default":0.6,"primary":true},
+      {"id":"speed","type":"float","label":{"en":"Speed","ru":"Скорость"},"min":0,"max":8,"default":2,"primary":true}
+    ],
+    "bindings":[{"id":"bass","feature":"band.bass","attack":20,"release":220}],
+    "expressions":{"boost":"1 + bind.bass * 0.3"},"render":{"type":"shader","id":"assets/shaders/pulse.frag"}
+  },
+  {
     "schemaVersion":1,"id":"builtin.karaoke","version":"1.0.0",
     "name":{"en":"Karaoke Lyrics","ru":"Караоке-текст"},"author":"VisuSic","category":"text",
     "tags":["lyrics","karaoke","sync","new"],"requires":{"audio":false,"lyrics":true},

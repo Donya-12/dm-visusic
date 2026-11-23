@@ -25,6 +25,7 @@ final class EditorController extends ChangeNotifier {
   }) : _bundle = bundle ?? ProjectBundle.empty() {
     _features = FeatureSnapshot.silent(project.canvas.duration);
     unawaited(refreshImages());
+    unawaited(_loadShaders());
   }
 
   /// Validated widget library.
@@ -38,6 +39,8 @@ final class EditorController extends ChangeNotifier {
   final BindingResolver _bindingResolver = BindingResolver();
   final Set<String> _selectedIds = <String>{};
   final Map<String, ui.Image> _images = <String, ui.Image>{};
+  final Map<String, ui.FragmentProgram> _shaderPrograms =
+      <String, ui.FragmentProgram>{};
   AnalysisCache? _cache;
   LyricsTrack? _lyrics;
   AudioPlayer? _player;
@@ -71,6 +74,10 @@ final class EditorController extends ChangeNotifier {
 
   /// Decoded project images.
   Map<String, ui.Image> get images => Map.unmodifiable(_images);
+
+  /// Preloaded GLSL fragment programs keyed by widget ID.
+  Map<String, ui.FragmentProgram> get shaderPrograms =>
+      Map.unmodifiable(_shaderPrograms);
 
   /// Whether a real analyzed audio cache is loaded.
   bool get hasAudio => _cache != null;
@@ -224,8 +231,24 @@ final class EditorController extends ChangeNotifier {
     });
   }
 
-  FeatureSnapshot _featuresAt(double seconds) {
-    final cache = _cache;
+  /// Loads GLSL programs for all shader-typed widgets.
+  Future<void> _loadShaders() async {
+    for (final manifest in registry.manifests) {
+      if (manifest.render.type != 'shader') {
+        continue;
+      }
+      try {
+        _shaderPrograms[manifest.id] = await ui.FragmentProgram.fromAsset(
+          manifest.render.id,
+        );
+      } on Object {
+        // Missing or invalid shader falls back to the unknown-widget painter.
+      }
+    }
+    notifyListeners();
+  }
+
+  FeatureSnapshot _featuresAt(double seconds) {    final cache = _cache;
     final base = cache != null
         ? cache.frameAt(seconds)
         : FeatureSnapshot.demo(seconds, project.canvas.duration);
