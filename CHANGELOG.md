@@ -20,3 +20,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Offline audio analysis, `.vsan` MessagePack cache, WAV/FFmpeg decoding, and playback.
 - LRC parser, LRCLIB client, karaoke/rolling lyrics widgets, and tap-to-sync.
 - Deterministic video export with FFmpeg (MP4/WebM), resolution/frame-rate presets, progress, and cancel.
+- Template packs (`.vspack`) with widget/scene import-export and eight built-in scene presets.

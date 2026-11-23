@@ -591,7 +591,9 @@ final class SceneProject {
     audioAnalysis: identical(audioAnalysis, _notProvided)
         ? this.audioAnalysis
         : audioAnalysis as String?,
-    lyrics: identical(lyrics, _notProvided) ? this.lyrics : lyrics as LyricsTrack?,
+    lyrics: identical(lyrics, _notProvided)
+        ? this.lyrics
+        : lyrics as LyricsTrack?,
   );
 
   /// Serializes the project manifest.
@@ -599,10 +601,7 @@ final class SceneProject {
     'schemaVersion': 1,
     'name': name,
     'canvas': canvas.toJson(),
-    'audio': <String, Object?>{
-      'path': audioPath,
-      'analysis': audioAnalysis,
-    },
+    'audio': <String, Object?>{'path': audioPath, 'analysis': audioAnalysis},
     'theme': <String, Object?>{
       'mode': 'dark',
       'scheme': 'seed',
@@ -659,7 +658,9 @@ LyricsTrack? _readLyrics(Object? value) {
   if (value is! Map || value['lines'] is! List) {
     return null;
   }
-  return LyricsTrack.fromJson(value.map((key, item) => MapEntry(key.toString(), item)));
+  return LyricsTrack.fromJson(
+    value.map((key, item) => MapEntry(key.toString(), item)),
+  );
 }
 
 JsonObject _requireMap(Object? value) {

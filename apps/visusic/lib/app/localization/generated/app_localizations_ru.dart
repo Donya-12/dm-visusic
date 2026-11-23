@@ -342,6 +342,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get exporting => 'Экспорт…';
 
   @override
+  String get templates => 'Шаблоны';
+
+  @override
+  String get importPack => 'Импорт .vspack';
+
+  @override
+  String get exportPack => 'Экспорт в .vspack';
+
+  @override
   String get save => 'Сохранить';
 
   @override

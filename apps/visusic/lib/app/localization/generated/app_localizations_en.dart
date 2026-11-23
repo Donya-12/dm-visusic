@@ -343,6 +343,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exporting => 'Exporting…';
 
   @override
+  String get templates => 'Templates';
+
+  @override
+  String get importPack => 'Import .vspack';
+
+  @override
+  String get exportPack => 'Export as .vspack';
+
+  @override
   String get save => 'Save';
 
   @override

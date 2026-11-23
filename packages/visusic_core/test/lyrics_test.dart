@@ -32,7 +32,10 @@ void main() {
   test('applies offset metadata and rejects empty input', () {
     final track = LrcParser.parse('[offset:500]\n[00:02.00]Shifted');
     expect(track.lines.single.timeMs, 2500);
-    expect(() => LrcParser.parse('no timestamps here'), throwsA(isA<LyricsParseException>()));
+    expect(
+      () => LrcParser.parse('no timestamps here'),
+      throwsA(isA<LyricsParseException>()),
+    );
   });
 
   test('resolves line and word progress', () {

@@ -738,6 +738,24 @@ abstract class AppLocalizations {
   /// **'Exporting…'**
   String get exporting;
 
+  /// No description provided for @templates.
+  ///
+  /// In en, this message translates to:
+  /// **'Templates'**
+  String get templates;
+
+  /// No description provided for @importPack.
+  ///
+  /// In en, this message translates to:
+  /// **'Import .vspack'**
+  String get importPack;
+
+  /// No description provided for @exportPack.
+  ///
+  /// In en, this message translates to:
+  /// **'Export as .vspack'**
+  String get exportPack;
+
   /// No description provided for @save.
   ///
   /// In en, this message translates to:

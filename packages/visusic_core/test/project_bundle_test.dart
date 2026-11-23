@@ -50,7 +50,9 @@ void main() {
       ),
       analysisBytes: analysis,
     );
-    final restored = ProjectArchiveCodec.decode(ProjectArchiveCodec.encode(original));
+    final restored = ProjectArchiveCodec.decode(
+      ProjectArchiveCodec.encode(original),
+    );
     expect(restored.project.audioPath, 'track.wav');
     expect(restored.project.audioAnalysis, 'analysis.vsan');
     expect(restored.analysisBytes, analysis);

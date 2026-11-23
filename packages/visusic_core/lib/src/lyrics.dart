@@ -65,7 +65,9 @@ final class LyricLine {
     timeMs: (json['timeMs'] as num).toDouble(),
     text: json['text'] as String,
     words: (json['words'] as List? ?? const <Object?>[])
-        .map((word) => LyricWord.fromJson((word as Map).cast<String, Object?>()))
+        .map(
+          (word) => LyricWord.fromJson((word as Map).cast<String, Object?>()),
+        )
         .toList(growable: false),
     translation: json['translation'] as String?,
     speaker: json['speaker'] as String?,
@@ -109,8 +111,7 @@ final class LyricsTrack {
   factory LyricsTrack.fromJson(Map<String, Object?> json) => LyricsTrack(
     lines: (json['lines'] as List? ?? const <Object?>[])
         .map(
-          (line) =>
-              LyricLine.fromJson((line as Map).cast<String, Object?>()),
+          (line) => LyricLine.fromJson((line as Map).cast<String, Object?>()),
         )
         .toList(growable: false),
     offsetMs: (json['offsetMs'] as num? ?? 0).toDouble(),
@@ -218,9 +219,15 @@ final class LyricsParseException implements Exception {
 
 /// Parses plain and enhanced LRC lyric text without executing input.
 abstract final class LrcParser {
-  static final RegExp _timestamp = RegExp(r'\[(\d{1,3}):(\d{1,2})(?:[.:](\d{1,3}))?\]');
-  static final RegExp _wordTag = RegExp(r'<(\d{1,3}):(\d{1,2})(?:[.:](\d{1,3}))?>');
-  static final RegExp _metadata = RegExp(r'^\[(ar|ti|al|au|length|offset|by|re):(.*)\]$');
+  static final RegExp _timestamp = RegExp(
+    r'\[(\d{1,3}):(\d{1,2})(?:[.:](\d{1,3}))?\]',
+  );
+  static final RegExp _wordTag = RegExp(
+    r'<(\d{1,3}):(\d{1,2})(?:[.:](\d{1,3}))?>',
+  );
+  static final RegExp _metadata = RegExp(
+    r'^\[(ar|ti|al|au|length|offset|by|re):(.*)\]$',
+  );
 
   /// Parses LRC content into a sorted [LyricsTrack].
   static LyricsTrack parse(String content) {
@@ -271,7 +278,9 @@ abstract final class LrcParser {
           final fraction = int.parse(tag.group(3) ?? '0');
           final wordTime = minutes * 60000 + seconds * 1000 + fraction;
           final start = tag.end;
-          final end = index + 1 < matches.length ? matches[index + 1].start : body.length;
+          final end = index + 1 < matches.length
+              ? matches[index + 1].start
+              : body.length;
           final wordText = body.substring(start, end).trim();
           if (wordText.isNotEmpty) {
             words.add(LyricWord(timeMs: wordTime.toDouble(), text: wordText));
@@ -283,13 +292,14 @@ abstract final class LrcParser {
         final minutes = int.parse(match.group(1)!);
         final seconds = int.parse(match.group(2)!);
         final fraction = int.parse(match.group(3) ?? '0');
-        final timeMs =
-            minutes * 60000 + seconds * 1000 + fraction + offsetMs;
+        final timeMs = minutes * 60000 + seconds * 1000 + fraction + offsetMs;
         lines.add(
           LyricLine(
             timeMs: timeMs.toDouble(),
             text: plainText,
-            words: words.isEmpty ? const <LyricWord>[] : List.unmodifiable(words),
+            words: words.isEmpty
+                ? const <LyricWord>[]
+                : List.unmodifiable(words),
             speaker: speaker,
           ),
         );

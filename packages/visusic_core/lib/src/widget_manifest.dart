@@ -79,6 +79,9 @@ final class LocalizedText {
   /// Resolves a locale and falls back to English.
   String resolve(String languageCode) => values[languageCode] ?? english;
 
+  /// Serializes the localized text.
+  Map<String, String> toJson() => values;
+
   /// Parses a JSON object or a plain English string.
   factory LocalizedText.fromJson(Object? json) {
     if (json is String && json.isNotEmpty) {
@@ -144,6 +147,20 @@ final class ParameterSpec {
 
   /// Optional inspector group title.
   final String? group;
+
+  /// Serializes this parameter.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'type': _typeName(type),
+    'label': label.toJson(),
+    'default': defaultValue,
+    if (minimum != null) 'min': minimum,
+    if (maximum != null) 'max': maximum,
+    if (unit != null) 'unit': unit,
+    if (options.isNotEmpty) 'options': options,
+    if (primary) 'primary': true,
+    if (group != null) 'group': group,
+  };
 
   /// Parses and validates a parameter entry.
   factory ParameterSpec.fromJson(Map<String, Object?> json) {
@@ -285,6 +302,15 @@ final class WidgetBindingSpec {
         releaseMs: _integer(json['release'], fallback: 180),
         curve: json['curve'] as String? ?? 'linear',
       );
+
+  /// Serializes this binding.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'id': id,
+    'feature': feature,
+    'attack': attackMs,
+    'release': releaseMs,
+    'curve': curve,
+  };
 }
 
 /// Renderer declaration from a widget.json manifest.
@@ -324,6 +350,14 @@ final class WidgetRenderSpec {
           : const <Object?>[],
     );
   }
+
+  /// Serializes this renderer declaration.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'type': type,
+    'id': id,
+    if (source != null) 'source': source,
+    if (nodes.isNotEmpty) 'nodes': nodes,
+  };
 }
 
 /// Complete parsed widget.json document.
@@ -498,6 +532,33 @@ final class WidgetManifest {
       aspectLock: anchorMap['aspectLock'] == true,
     );
   }
+
+  /// Serializes the manifest back to widget.json form.
+  Map<String, Object?> toJson() => <String, Object?>{
+    'schemaVersion': 1,
+    'id': id,
+    'version': version,
+    'name': name.toJson(),
+    'author': author,
+    'category': category,
+    if (tags.isNotEmpty) 'tags': tags,
+    'requires': <String, Object?>{'audio': needsAudio, 'lyrics': needsLyrics},
+    'anchor': <String, Object?>{
+      'default': anchor,
+      'resizable': resizable,
+      'aspectLock': aspectLock,
+      'width': defaultWidth,
+      'height': defaultHeight,
+    },
+    'params': parameters
+        .map((parameter) => parameter.toJson())
+        .toList(growable: false),
+    'bindings': bindings
+        .map((binding) => binding.toJson())
+        .toList(growable: false),
+    'expressions': expressions,
+    'render': render.toJson(),
+  };
 }
 
 /// Validated manifest collection with unique identifiers.
@@ -571,3 +632,21 @@ int _integer(Object? value, {required int fallback}) =>
 
 bool _isColor(String value) =>
     RegExp(r'^#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$').hasMatch(value);
+
+String _typeName(ParameterType type) => switch (type) {
+  ParameterType.float => 'float',
+  ParameterType.integer => 'int',
+  ParameterType.boolean => 'bool',
+  ParameterType.enumeration => 'enum',
+  ParameterType.color => 'color',
+  ParameterType.gradient => 'gradient',
+  ParameterType.font => 'font',
+  ParameterType.text => 'text',
+  ParameterType.multiline => 'multiline',
+  ParameterType.image => 'image',
+  ParameterType.choiceCards => 'choiceCards',
+  ParameterType.vector2 => 'vector2',
+  ParameterType.range => 'range',
+  ParameterType.curveEditor => 'curveEditor',
+  ParameterType.group => 'group',
+};

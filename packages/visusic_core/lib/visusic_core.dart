@@ -7,6 +7,7 @@ export 'src/expressions.dart';
 export 'src/feature_snapshot.dart';
 export 'src/keyframe_animation.dart';
 export 'src/lyrics.dart';
+export 'src/pack.dart';
 export 'src/project_bundle.dart';
 export 'src/scene_models.dart';
 export 'src/snapping.dart';

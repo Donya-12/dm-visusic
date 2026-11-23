@@ -329,9 +329,20 @@ final class EditorController extends ChangeNotifier {
     );
   }
 
+  /// Replaces all layers with a ready-to-apply scene preset.
+  void applyScene(SceneProject preset) {
+    final layers = preset.layers
+        .map((layer) => layer._withId(_newLayerId()))
+        .toList(growable: false);
+    final before = project;
+    final after = project.copyWith(layers: layers);
+    _execute(_ApplySceneCommand(before, after));
+    _selectedIds.clear();
+    notifyListeners();
+  }
+
   /// Aligns the next unsynced line to the current playhead.
-  void tapToSync() {
-    final lyrics = _lyrics;
+  void tapToSync() {    final lyrics = _lyrics;
     if (lyrics == null) {
       return;
     }
@@ -970,8 +981,19 @@ final class EditorController extends ChangeNotifier {
   }
 }
 
-final class _RenameProjectCommand implements EditorCommand {
-  const _RenameProjectCommand(this.before, this.after);
+final class _RenameProjectCommand implements EditorCommand {  const _RenameProjectCommand(this.before, this.after);
+  final SceneProject before;
+  final SceneProject after;
+
+  @override
+  ProjectBundle apply(ProjectBundle bundle) => bundle.copyWith(project: after);
+
+  @override
+  ProjectBundle undo(ProjectBundle bundle) => bundle.copyWith(project: before);
+}
+
+final class _ApplySceneCommand implements EditorCommand {
+  const _ApplySceneCommand(this.before, this.after);
   final SceneProject before;
   final SceneProject after;
 

@@ -15,6 +15,7 @@ import 'package:visusic/features/editor/inspector_panel.dart';
 import 'package:visusic/features/editor/timeline_panel.dart';
 import 'package:visusic/features/editor/widget_library.dart';
 import 'package:visusic/features/export/export_dialog.dart';
+import 'package:visusic/features/library/templates_dialog.dart';
 import 'package:visusic/features/lyrics/lyrics_dialog.dart';
 import 'package:visusic/platform/file_project_storage.dart';
 import 'package:visusic_core/visusic_core.dart';
@@ -215,6 +216,15 @@ class _EditorScreenState extends State<EditorScreen>
                         builder: (_) => ExportDialog(controller: _controller),
                       ),
                       icon: const Icon(Icons.movie_outlined),
+                    ),
+                    IconButton(
+                      key: const Key('templates-button'),
+                      tooltip: l10n.templates,
+                      onPressed: () => showDialog<void>(
+                        context: context,
+                        builder: (_) => TemplatesDialog(controller: _controller),
+                      ),
+                      icon: const Icon(Icons.dashboard_outlined),
                     ),
                     IconButton(
                       key: const Key('open-button'),
