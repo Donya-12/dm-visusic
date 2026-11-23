@@ -23,4 +23,4 @@ The development workspace also uses `test` and `flutter_lints` (BSD 3-Clause). G
 
 ## Future components
 
-FFmpeg is not bundled at M0. Audio decoding is available through an optional FFmpeg binary downloaded by `tool/fetch_ffmpeg.ps1` (LGPL build) into `tool/ffmpeg`, which Git ignores. When a release ships FFmpeg alongside the application, the exact build, license configuration, source offer, and required LGPL notices must be reviewed and documented before distribution.
+Audio decoding uses an FFmpeg binary (LGPL build) fetched by `tool/fetch_ffmpeg.ps1`. The portable release bundles `ffmpeg.exe` next to `VisuSic.exe`; the LGPL source offer and required notices are documented in the repository and license page. Video export uses the same binary.

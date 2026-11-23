@@ -54,14 +54,15 @@ final class FfmpegAudioDecoder implements AudioDecoder {
   }
 
   String _ffmpegPath() {
-    for (final relative in const <String>[
+    final candidates = <String>[
+      File('${File(Platform.resolvedExecutable).parent.path}/ffmpeg.exe').path,
       'tool/ffmpeg/ffmpeg.exe',
       '../tool/ffmpeg/ffmpeg.exe',
       '../../tool/ffmpeg/ffmpeg.exe',
-    ]) {
-      final file = File(relative);
-      if (file.existsSync()) {
-        return file.absolute.path;
+    ];
+    for (final candidate in candidates) {
+      if (File(candidate).existsSync()) {
+        return File(candidate).absolute.path;
       }
     }
     return 'ffmpeg';

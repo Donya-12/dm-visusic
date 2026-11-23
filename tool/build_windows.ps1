@@ -18,11 +18,21 @@ if (-not (Test-Path -LiteralPath $executable)) {
     throw "Expected Windows executable was not produced: $executable"
 }
 
+# Bundle FFmpeg so every audio format works in the portable build.
+$ffmpeg = Join-Path $root "tool/ffmpeg/ffmpeg.exe"
+if (-not (Test-Path -LiteralPath $ffmpeg)) {
+    & (Join-Path $root "tool/fetch_ffmpeg.ps1")
+}
+if (-not (Test-Path -LiteralPath $ffmpeg)) {
+    throw "FFmpeg binary is missing after fetch: $ffmpeg"
+}
+
 if (Test-Path -LiteralPath $portable) {
     Remove-Item -LiteralPath $portable -Recurse -Force
 }
 New-Item -ItemType Directory -Force -Path $portable | Out-Null
 Copy-Item -Path (Join-Path $release "*") -Destination $portable -Recurse -Force
+Copy-Item -LiteralPath $ffmpeg -Destination $portable
 Copy-Item -LiteralPath (Join-Path $root "LICENSE") -Destination $portable
 Copy-Item -LiteralPath (Join-Path $root "THIRD-PARTY.md") -Destination $portable
 
